@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 
 const serviceCategories = [
   {
@@ -47,40 +46,40 @@ const serviceCategories = [
 
 const Services = () => {
   return (
-    <main className="pt-28 md:pt-36 pb-24">
+    <main className="pt-32 md:pt-44 pb-32">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="max-w-3xl mb-20 animate-fade-up">
-          <p className="text-sm tracking-widest uppercase text-muted-foreground mb-4">Services</p>
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-8">
+        <div className="max-w-4xl mb-28 animate-fade-up">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">SERVICES</p>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[1.1] mb-10">
             Design-led.
             <br />
-            <span className="font-editorial italic font-normal">Technically solid.</span>
+            <span className="font-editorial">Technically solid.</span>
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl">
             Three disciplines, one coherent process. Every project benefits from design thinking and engineering rigour working together from day one.
           </p>
         </div>
 
-        <div className="space-y-24">
+        <div className="space-y-32">
           {serviceCategories.map((category) => (
-            <section key={category.title} className="border-t border-border pt-12">
-              <div className="grid md:grid-cols-12 gap-8 md:gap-12">
+            <section key={category.title} className="border-t border-border pt-16">
+              <div className="grid md:grid-cols-12 gap-12 md:gap-16">
                 <div className="md:col-span-5">
-                  <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
+                  <h2 className="text-2xl md:text-4xl font-light tracking-tight mb-6">
                     {category.title}
                   </h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-sm leading-[1.8] mb-6">
                     {category.intro}
                   </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed italic">
+                  <p className="text-xs text-muted-foreground/60 leading-relaxed italic">
                     {category.approach}
                   </p>
                 </div>
                 <div className="md:col-span-7">
-                  <div className="space-y-6">
+                  <div className="space-y-0">
                     {category.services.map((service) => (
-                      <div key={service.name} className="border-b border-border pb-4">
-                        <h3 className="font-display text-sm font-semibold mb-1">{service.name}</h3>
+                      <div key={service.name} className="border-b border-border py-5">
+                        <h3 className="text-sm font-normal mb-1 tracking-tight">{service.name}</h3>
                         <p className="text-sm text-muted-foreground">{service.desc}</p>
                       </div>
                     ))}
@@ -91,19 +90,19 @@ const Services = () => {
           ))}
         </div>
 
-        <div className="border-t border-border pt-16 mt-24">
-          <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight mb-4">
+        <div className="border-t border-border pt-20 mt-32">
+          <h2 className="text-2xl md:text-4xl font-light tracking-tight mb-6">
             Ready to start?
           </h2>
-          <p className="text-muted-foreground mb-6 max-w-md">
+          <p className="text-muted-foreground mb-8 max-w-md text-sm leading-[1.8]">
             Tell us about your project. We'll review it and respond within two working days.
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 text-sm font-medium tracking-wide rounded-sm group transition-colors hover:bg-foreground/90"
+            className="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border border-foreground/30 px-6 py-3 text-foreground/80 hover:text-foreground hover:border-foreground/60 transition-all duration-300"
           >
             Start a project
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+            <span className="text-sm">→</span>
           </Link>
         </div>
       </div>

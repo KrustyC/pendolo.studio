@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 
 const services = [
   {
@@ -24,25 +23,27 @@ const services = [
 
 const ServicesPreview = () => {
   return (
-    <section className="py-24 md:py-32">
+    <section className="py-32 md:py-44 border-t border-border">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="mb-16">
-          <p className="text-sm tracking-widest uppercase text-muted-foreground mb-4">Services</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+        <div className="mb-20">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
+            SERVICES
+          </p>
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight">
             What we do
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-16">
           {services.map((service) => (
-            <div key={service.title} className="group">
-              <h3 className="font-display text-xl font-semibold mb-4">{service.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+            <div key={service.title}>
+              <h3 className="text-lg font-normal mb-4 tracking-tight">{service.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
                 {service.description}
               </p>
-              <ul className="space-y-2 mb-8">
+              <ul className="space-y-3">
                 {service.items.map((item) => (
-                  <li key={item} className="text-sm text-muted-foreground">
+                  <li key={item} className="text-sm text-muted-foreground/70">
                     {item}
                   </li>
                 ))}
@@ -51,13 +52,12 @@ const ServicesPreview = () => {
           ))}
         </div>
 
-        <div className="mt-12">
+        <div className="mt-16">
           <Link
             to="/services"
-            className="inline-flex items-center gap-2 text-sm font-medium tracking-wide group"
+            className="link-underline text-sm tracking-wide text-foreground/80 hover:text-foreground transition-opacity"
           >
             View all services
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>

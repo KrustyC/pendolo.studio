@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -18,9 +17,12 @@ const Contact = () => {
     name: "",
     email: "",
     company: "",
+    service: "",
+    industry: "",
     budget: "",
     description: "",
   });
+  const [showNote, setShowNote] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,122 +30,160 @@ const Contact = () => {
       title: "Message sent",
       description: "Thank you. We'll be in touch within two working days.",
     });
-    setFormData({ name: "", email: "", company: "", budget: "", description: "" });
+    setFormData({ name: "", email: "", company: "", service: "", industry: "", budget: "", description: "" });
+    setShowNote(false);
   };
 
   return (
-    <main className="pt-28 md:pt-36 pb-24">
+    <main className="pt-32 md:pt-44 pb-32">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="grid md:grid-cols-12 gap-12 md:gap-20">
-          <div className="md:col-span-7 animate-fade-up">
-            <p className="text-sm tracking-widest uppercase text-muted-foreground mb-4">Contact</p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
-              Tell us about
-              <br />
-              <span className="font-editorial italic font-normal">your project.</span>
-            </h1>
-            <p className="text-muted-foreground leading-relaxed mb-12 max-w-lg">
-              Share a few details and we'll get back to you within two working days. No obligation, no pressure.
-            </p>
+        <div className="max-w-3xl animate-fade-up">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">CONTACT</p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm">Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-                    required
-                    maxLength={100}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                    required
-                    maxLength={255}
-                  />
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-12">
+            {/* Conversational form layout inspired by reference */}
+            <div className="space-y-10">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
+                <span>Hello, my name is</span>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                  required
+                  maxLength={100}
+                  placeholder="Your Name"
+                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[160px] flex-shrink transition-colors"
+                />
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="company" className="text-sm">Company</Label>
-                  <Input
-                    id="company"
-                    value={formData.company}
-                    onChange={(e) => setFormData((p) => ({ ...p, company: e.target.value }))}
-                    maxLength={100}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="budget" className="text-sm">Budget range</Label>
-                  <Select onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a range" />
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
+                <span>and my email is</span>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
+                  required
+                  maxLength={255}
+                  placeholder="Email Address"
+                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[200px] flex-shrink transition-colors"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
+                <span>I represent</span>
+                <input
+                  type="text"
+                  value={formData.company}
+                  onChange={(e) => setFormData((p) => ({ ...p, company: e.target.value }))}
+                  maxLength={100}
+                  placeholder="Company"
+                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[140px] flex-shrink transition-colors"
+                />
+                <span>.</span>
+              </div>
+
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
+                <span>We are looking for</span>
+                <div className="inline-block min-w-[180px]">
+                  <Select onValueChange={(v) => setFormData((p) => ({ ...p, service: v }))}>
+                    <SelectTrigger className="bg-transparent border-0 border-b border-foreground/20 rounded-none text-2xl md:text-3xl font-light h-auto p-0 pb-1 focus:ring-0 focus:border-foreground/60 [&>svg]:text-muted-foreground">
+                      <SelectValue placeholder="Select service" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="<5k">Under £5,000</SelectItem>
-                      <SelectItem value="5-10k">£5,000 – £10,000</SelectItem>
-                      <SelectItem value="10-25k">£10,000 – £25,000</SelectItem>
-                      <SelectItem value="25k+">£25,000+</SelectItem>
+                      <SelectItem value="brand">Brand Design</SelectItem>
+                      <SelectItem value="web-design">Web Design</SelectItem>
+                      <SelectItem value="web-dev">Web Development</SelectItem>
+                      <SelectItem value="full">Full Package</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-sm">Project description *</Label>
-                <Textarea
-                  id="description"
-                  rows={6}
-                  value={formData.description}
-                  onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
-                  required
-                  maxLength={2000}
-                  placeholder="Tell us about your project, goals, and timeline."
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
+                <span>within the</span>
+                <input
+                  type="text"
+                  value={formData.industry}
+                  onChange={(e) => setFormData((p) => ({ ...p, industry: e.target.value }))}
+                  maxLength={100}
+                  placeholder="Industry"
+                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[120px] flex-shrink transition-colors"
                 />
-              </div>
-
-              <Button type="submit" size="lg" className="mt-2">
-                Send message
-              </Button>
-            </form>
-          </div>
-
-          <div className="md:col-span-5 md:pt-32">
-            <div className="space-y-10">
-              <div>
-                <p className="text-sm font-medium tracking-wide uppercase mb-2">Email</p>
-                <a
-                  href="mailto:hello@pendolo.studio"
-                  className="text-foreground hover:text-accent transition-colors text-sm"
-                >
-                  hello@pendolo.studio
-                </a>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium tracking-wide uppercase mb-2">Based in</p>
-                <p className="text-sm text-muted-foreground">United Kingdom · Italy</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium tracking-wide uppercase mb-2">Languages</p>
-                <p className="text-sm text-muted-foreground">English · Italian · Spanish</p>
-              </div>
-
-              <div className="pt-6 border-t border-border">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  We respond to every enquiry personally. No auto-replies, no sales funnels. Just a conversation about whether we're the right fit.
-                </p>
+                <span>sector.</span>
               </div>
             </div>
+
+            {/* Budget */}
+            <div>
+              <p className="text-2xl md:text-3xl font-light tracking-tight mb-8">Our budget is around</p>
+              <div className="space-y-4">
+                <Select onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}>
+                  <SelectTrigger className="bg-transparent border border-border rounded-none text-sm tracking-wide h-12 focus:ring-0 focus:border-foreground/40 max-w-sm">
+                    <SelectValue placeholder="Select a range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="<5k">Under £5,000</SelectItem>
+                    <SelectItem value="5-10k">£5,000 – £10,000</SelectItem>
+                    <SelectItem value="10-25k">£10,000 – £25,000</SelectItem>
+                    <SelectItem value="25k+">£25,000+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Add a note toggle */}
+            {!showNote ? (
+              <button
+                type="button"
+                onClick={() => setShowNote(true)}
+                className="text-xs tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground transition-opacity"
+              >
+                + Add a note
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <Label htmlFor="description" className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
+                  Project notes
+                </Label>
+                <Textarea
+                  id="description"
+                  rows={5}
+                  value={formData.description}
+                  onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+                  maxLength={2000}
+                  placeholder="Tell us about your project, goals, and timeline."
+                  className="bg-transparent border border-border rounded-none resize-none focus:border-foreground/40 focus-visible:ring-0"
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="bg-foreground text-background px-10 py-4 text-xs tracking-[0.2em] uppercase hover:bg-foreground/90 transition-colors"
+            >
+              Send inquiry
+            </button>
+          </form>
+        </div>
+
+        {/* Side info */}
+        <div className="mt-28 pt-16 border-t border-border grid md:grid-cols-3 gap-12">
+          <div>
+            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">Email</p>
+            <a
+              href="mailto:hello@pendolo.studio"
+              className="text-sm text-foreground/70 hover:text-foreground transition-opacity"
+            >
+              hello@pendolo.studio
+            </a>
+          </div>
+          <div>
+            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">Based in</p>
+            <p className="text-sm text-muted-foreground">United Kingdom · Italy</p>
+          </div>
+          <div>
+            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">Languages</p>
+            <p className="text-sm text-muted-foreground">English · Italian · Spanish</p>
           </div>
         </div>
       </div>

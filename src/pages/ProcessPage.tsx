@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 
 const processSteps = [
   {
@@ -72,36 +71,36 @@ const processSteps = [
 
 const ProcessPage = () => {
   return (
-    <main className="pt-28 md:pt-36 pb-24">
+    <main className="pt-32 md:pt-44 pb-32">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="max-w-3xl mb-20 animate-fade-up">
-          <p className="text-sm tracking-widest uppercase text-muted-foreground mb-4">Process</p>
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-8">
+        <div className="max-w-4xl mb-28 animate-fade-up">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">PROCESS</p>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[1.1] mb-10">
             Structured,
             <br />
-            <span className="font-editorial italic font-normal">not rigid.</span>
+            <span className="font-editorial">not rigid.</span>
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl">
             Every project follows a clear process. It adapts to the scope and complexity of the work, but the discipline stays the same.
           </p>
         </div>
 
         <div className="space-y-0">
           {processSteps.map((step) => (
-            <section key={step.number} className="border-t border-border py-12 md:py-16">
-              <div className="grid md:grid-cols-12 gap-6 md:gap-12">
+            <section key={step.number} className="border-t border-border py-16 md:py-20">
+              <div className="grid md:grid-cols-12 gap-8 md:gap-16">
                 <div className="md:col-span-1">
-                  <span className="text-sm text-muted-foreground font-body">{step.number}</span>
+                  <span className="text-xs text-muted-foreground tracking-[0.2em]">{step.number}</span>
                 </div>
                 <div className="md:col-span-4">
-                  <h2 className="font-display text-xl md:text-2xl font-bold mb-3">{step.title}</h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                  <h2 className="text-xl md:text-2xl font-light tracking-tight mb-4">{step.title}</h2>
+                  <p className="text-sm text-muted-foreground leading-[1.8]">{step.description}</p>
                 </div>
                 <div className="md:col-span-7 md:pl-8">
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {step.details.map((detail) => (
-                      <li key={detail} className="text-sm text-muted-foreground flex items-start gap-3">
-                        <span className="w-1 h-1 rounded-full bg-accent mt-2 shrink-0" />
+                      <li key={detail} className="text-sm text-muted-foreground flex items-start gap-4">
+                        <span className="w-1 h-1 rounded-full bg-foreground/30 mt-2 shrink-0" />
                         {detail}
                       </li>
                     ))}
@@ -112,16 +111,16 @@ const ProcessPage = () => {
           ))}
         </div>
 
-        <div className="border-t border-border pt-16 mt-8">
-          <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight mb-4">
+        <div className="border-t border-border pt-20 mt-8">
+          <h2 className="text-2xl md:text-4xl font-light tracking-tight mb-6">
             Ready to start the process?
           </h2>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 text-sm font-medium tracking-wide rounded-sm group transition-colors hover:bg-foreground/90"
+            className="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border border-foreground/30 px-6 py-3 text-foreground/80 hover:text-foreground hover:border-foreground/60 transition-all duration-300"
           >
             Start a project
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+            <span className="text-sm">→</span>
           </Link>
         </div>
       </div>
