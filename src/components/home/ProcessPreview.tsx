@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 
 const steps = [
   { number: "01", title: "Discovery", description: "Understanding your business, goals, and audience." },
@@ -12,34 +11,33 @@ const steps = [
 
 const ProcessPreview = () => {
   return (
-    <section className="py-24 md:py-32 border-t border-border">
+    <section className="py-32 md:py-44 border-t border-border">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="mb-16">
-          <p className="text-sm tracking-widest uppercase text-muted-foreground mb-4">Process</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+        <div className="mb-20">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">PROCESS</p>
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight">
             How we work
           </h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
           {steps.map((step) => (
             <div key={step.number}>
-              <span className="text-xs text-muted-foreground font-body tracking-wide">
+              <span className="text-xs text-muted-foreground tracking-[0.2em]">
                 {step.number}
               </span>
-              <h3 className="font-display text-lg font-semibold mt-2 mb-2">{step.title}</h3>
+              <h3 className="text-lg font-normal mt-3 mb-3 tracking-tight">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-12">
+        <div className="mt-16">
           <Link
             to="/process"
-            className="inline-flex items-center gap-2 text-sm font-medium tracking-wide group"
+            className="link-underline text-sm tracking-wide text-foreground/80 hover:text-foreground transition-opacity"
           >
             Learn more about our process
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>
