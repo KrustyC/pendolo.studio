@@ -6,7 +6,7 @@ const Hero = () => {
       <div className="container mx-auto px-6 lg:px-12">
         <div className="max-w-5xl">
           <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-10 animate-fade-up">
-            Make yourself relevant
+            Motion with a fixed point
           </p>
           <h1 className="text-3xl md:text-5xl lg:text-[3.5rem] font-light tracking-tight leading-[1.3] mb-14 animate-fade-up-delay-1">
             Pendolo is a boutique studio combining{" "}
