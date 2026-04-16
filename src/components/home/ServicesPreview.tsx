@@ -2,18 +2,21 @@ import { Link } from "react-router-dom";
 
 const services = [
   {
+    number: "01",
     title: "Brand",
     description:
       "Identity systems that hold up across every touchpoint. From strategy to guidelines, built for consistency and longevity.",
     items: ["Brand Identity", "Brand Architecture", "Identity Guidelines", "Marketing Materials"],
   },
   {
+    number: "02",
     title: "Web Design",
     description:
       "Research-driven design that balances form and function. Clear information architecture, strong visual systems, considered user experience.",
     items: ["Competitor Research", "Content Architecture", "UX/UI Design", "UI Kit"],
   },
   {
+    number: "03",
     title: "Web Development",
     description:
       "Clean, performant code with deployment discipline. From implementation through monitoring, built for speed and reliability.",
@@ -36,7 +39,10 @@ const ServicesPreview = () => {
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-16">
           {services.map((service) => (
-            <div key={service.title}>
+            <div key={service.title} className="group">
+              <span className="text-xs text-muted-foreground tracking-[0.2em] block mb-4">
+                {service.number}
+              </span>
               <h3 className="text-lg font-normal mb-4 tracking-tight">{service.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed mb-8">
                 {service.description}
