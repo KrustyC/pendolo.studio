@@ -4,13 +4,10 @@ const CallToAction = () => {
   return (
     <section className="py-32 md:py-48 border-t border-border">
       <div className="container mx-auto px-6 lg:px-12 text-center">
-        <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-10">
-          READY?
-        </p>
         <h2 className="text-4xl md:text-6xl lg:text-[5.5rem] font-light tracking-tight leading-[1.1] mb-14 max-w-4xl mx-auto">
-          Let's build something
+          Looking for something
           <br />
-          <span className="font-editorial">iconic.</span>
+          different? <span className="font-editorial">iconic.</span>
         </h2>
         <Link
           to="/contact"
