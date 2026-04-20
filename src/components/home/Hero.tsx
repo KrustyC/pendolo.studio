@@ -128,21 +128,12 @@ const Hero = () => {
             CREATIVITY WITH A FIXED POINT
           </p>
           <h1 className="text-3xl md:text-5xl lg:text-[3.5rem] font-light tracking-tight leading-[1.3] mb-14 animate-fade-up-delay-1">
-            Pendolo is a boutique studio combining{" "}
-            <HighlightWord
-              variant="scribble"
-              tooltip="Pixels arranged on purpose."
-              position="top"
-            >
-              design
-            </HighlightWord>{" "}
-            foundations with technical precision.{" "}
             <HighlightWord
               variant="circle"
               tooltip="A logo, and the soul behind it."
               position="bottom"
             >
-              Brand identity
+              Branding
             </HighlightWord>
             ,{" "}
             <HighlightWord
@@ -152,7 +143,7 @@ const Hero = () => {
             >
               web design
             </HighlightWord>
-            , and development for businesses that value clarity.
+            , and development for businesses that value a different point of view.
           </h1>
           <Link
             to="/work"
