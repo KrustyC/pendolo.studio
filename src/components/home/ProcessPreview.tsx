@@ -37,7 +37,7 @@ const ProcessPreview = () => {
             to="/process"
             className="link-underline text-sm tracking-wide text-foreground/80 hover:text-foreground transition-opacity"
           >
-            Learn more about our process
+            Learn more about our process and pricing
           </Link>
         </div>
       </div>
