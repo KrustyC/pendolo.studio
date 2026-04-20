@@ -75,7 +75,7 @@ const ServicesPreview = () => {
                     {service.items.map((item) => (
                       <li
                         key={item}
-                        className="text-sm tracking-wide border-b border-current/20 py-4 opacity-80"
+                        className="text-sm tracking-wide border-b border-current/20 opacity-80 border-0 border-none rounded-none py-[4px]"
                       >
                         {item}
                       </li>
