@@ -49,26 +49,8 @@ const WorkPreview = () => {
           </Link>
         </div>
 
-        {/* Layered card display */}
-        <div className="relative flex justify-center items-center py-16 mb-16">
-          <div className="relative w-full max-w-3xl h-[400px] md:h-[500px]">
-            {projects.map((project, index) => {
-              const offset = (index - 1) * 120;
-              const rotation = (index - 1) * 4;
-              const zIndex = projects.length - Math.abs(index - 1);
-              return (
-                <div
-                  key={project.title}
-                  className="absolute top-0 left-1/2 w-[260px] md:w-[320px] h-[340px] md:h-[420px] bg-secondary border border-border transition-transform duration-500 hover:-translate-y-2"
-                  style={{
-                    transform: `translateX(calc(-50% + ${offset}px)) rotate(${rotation}deg)`,
-                    zIndex,
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
+        {/* Draggable card carousel */}
+        <DraggableCards />
 
         <div className="space-y-0">
           {projects.map((project, index) => (
