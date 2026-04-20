@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import phoneSticker from "@/assets/phone-sticker.png";
+import phoneSticker from "@/assets/sticker-phone.png";
+import freeSticker from "@/assets/sticker-its-free.png";
 
 const CallToAction = () => {
   return (
@@ -52,49 +53,20 @@ const CallToAction = () => {
             alt=""
             aria-hidden="true"
             loading="lazy"
-            width={768}
+            width={1024}
             height={1024}
-            className="hidden md:block absolute -left-6 lg:-left-10 top-1/2 -translate-y-1/2 w-40 lg:w-52 rotate-[-8deg] pointer-events-none select-none"
+            className="hidden md:block absolute -left-10 lg:-left-16 top-1/2 -translate-y-1/2 w-44 lg:w-60 rotate-[-10deg] pointer-events-none select-none drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
           />
 
           {/* "It's Free!" sticker - top right */}
-          <div className="absolute -top-6 right-6 md:-top-8 md:right-10 rotate-[12deg] pointer-events-none">
-            <svg viewBox="0 0 120 120" className="w-20 md:w-28 h-20 md:h-28">
-              <path
-                d="M60 4 L68 14 L80 8 L82 22 L96 22 L92 36 L106 42 L96 52 L108 62 L94 68 L102 82 L88 84 L88 98 L74 92 L68 106 L58 96 L46 108 L42 94 L28 96 L30 82 L16 78 L24 66 L12 58 L24 50 L14 38 L28 36 L26 22 L40 24 L44 10 L54 16 Z"
-                fill="#F5F0DC"
-                stroke="#0D0D0D"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-              />
-              <text
-                x="60"
-                y="58"
-                textAnchor="middle"
-                fill="#0D0D0D"
-                style={{
-                  fontFamily: "'Caveat', 'Patrick Hand', cursive",
-                  fontSize: "20px",
-                  fontWeight: 700,
-                }}
-              >
-                IT'S
-              </text>
-              <text
-                x="60"
-                y="78"
-                textAnchor="middle"
-                fill="#0D0D0D"
-                style={{
-                  fontFamily: "'Caveat', 'Patrick Hand', cursive",
-                  fontSize: "20px",
-                  fontWeight: 700,
-                }}
-              >
-                FREE!
-              </text>
-            </svg>
-          </div>
+          <img
+            src={freeSticker}
+            alt="It's free"
+            loading="lazy"
+            width={1024}
+            height={1024}
+            className="absolute -top-10 right-4 md:-top-14 md:right-8 w-24 md:w-32 lg:w-36 rotate-[14deg] pointer-events-none select-none drop-shadow-[0_6px_14px_rgba(0,0,0,0.35)]"
+          />
         </div>
       </div>
     </section>
