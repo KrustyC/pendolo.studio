@@ -84,15 +84,20 @@
   }
 
   /* Scruffy handwritten micro-labels — applied globally to all
-     uppercase tracked eyebrow labels across the site. */
+     uppercase tracked eyebrow labels across the site.
+     Swap font-family below to compare options:
+       "Kalam"               -> scruffy ballpoint, slight tilt
+       "Shadows Into Light"  -> thinner, more whimsical
+       "Caveat"              -> rounder, marker-like
+  */
   .uppercase.tracking-\[0\.3em\],
   .uppercase.tracking-\[0\.2em\] {
-    font-family: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+    font-family: "Kalam", "Bradley Hand", "Segoe Print", cursive;
     text-transform: none !important;
     letter-spacing: 0.01em !important;
-    font-weight: 600;
+    font-weight: 400;
     font-size: 1.05rem;
-    line-height: 1.1;
+    line-height: 1.15;
   }
 
   /* Dark section utility */
