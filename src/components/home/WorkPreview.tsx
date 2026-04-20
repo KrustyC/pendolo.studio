@@ -1,20 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useState } from "react";
 
 const projects = [
   {
+    slug: "meridian-cultural-centre",
     title: "Meridian Cultural Centre",
     category: "Brand · Web Design · Development",
     description: "Complete identity and digital presence for a cultural venue bridging Italian and British arts programming.",
+    color: "#9484D2",
   },
   {
+    slug: "terraverde-organic",
     title: "Terraverde Organic",
     category: "Brand · E-commerce",
     description: "Brand identity and online store for a family-run organic producer expanding across European markets.",
+    color: "#43CCBC",
   },
   {
+    slug: "lumen-foundation",
     title: "Lumen Foundation",
     category: "Web Design · Development",
     description: "Clear, accessible website for a non-profit supporting digital literacy initiatives in underserved communities.",
+    color: "#E8E4DD",
   },
 ];
 
