@@ -62,9 +62,9 @@ const WorkPreview = () => {
                   </span>
                 </div>
                 <div className="md:col-span-4">
-                  <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-1">
+                  <span className="inline-block text-[10px] tracking-[0.2em] uppercase text-muted-foreground border border-border rounded-full px-3 py-1 mb-3">
                     {project.category}
-                  </p>
+                  </span>
                   <h3 className="text-lg md:text-xl font-light tracking-tight group-hover:text-foreground/80 transition-opacity">
                     {project.title}
                   </h3>
