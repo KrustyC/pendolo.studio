@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,7 +22,8 @@
     --secondary-foreground: 0 0% 7%;
 
     --muted: 0 0% 95%;
-    --muted-foreground: 0 0% 40%;
+    /* Same as body copy — no separate “grey” muted type on light surfaces */
+    --muted-foreground: 0 0% 7%;
 
     --accent: 25 82% 55%;
     --accent-foreground: 0 0% 100%;
@@ -64,6 +67,22 @@
   }
 }
 
+@layer components {
+  .font-typewriter {
+    font-family: "IBM Plex Mono", "Space Mono", "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  nav,
+  footer {
+    font-family: "IBM Plex Mono", "Space Mono", "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  .text-muted-foreground {
+    font-family: "IBM Plex Mono", "Space Mono", "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.02em;
+  }
+}
+
 @layer utilities {
   .font-display {
     font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -83,41 +102,42 @@
     text-wrap: balance;
   }
 
-  /* Scruffy handwritten micro-labels — applied globally to all
-     uppercase tracked eyebrow labels across the site.
-     Swap font-family below to compare options:
-       "Kalam"               -> scruffy ballpoint, slight tilt
-       "Shadows Into Light"  -> thinner, more whimsical
-       "Caveat"              -> rounder, marker-like
-  */
-  .uppercase.tracking-\[0\.3em\],
-  .uppercase.tracking-\[0\.2em\] {
-    font-family: "Kalam", "Bradley Hand", "Segoe Print", cursive;
-    text-transform: none !important;
-    letter-spacing: 0.01em !important;
-    font-weight: 400;
-    font-size: 1.05rem;
-    line-height: 1.15;
+  /* Pill CTAs / chips: white fill, neutral border, black sans-serif */
+  .cta-marketing {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-0 bg-white px-4 py-2 font-sans text-xs font-semibold uppercase text-neutral-950 shadow-none transition-colors;
+    @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
+  }
+  .cta-nav {
+    @apply inline-flex items-center justify-center rounded-full border-0 bg-white px-3.5 py-1.5 font-sans text-[10px] font-semibold text-neutral-950 uppercase shadow-none transition-colors;
+    @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
+  }
+  .cta-chip {
+    @apply inline-flex items-center justify-center rounded-full border-0 bg-white px-3 py-1.5 font-sans text-[10px] font-semibold uppercase text-neutral-950 shadow-none transition-colors;
+    @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
+  }
+  .cta-submit {
+    @apply inline-flex items-center justify-center rounded-full border-0 bg-white px-5 py-2 font-sans text-xs font-semibold uppercase text-neutral-950 shadow-none transition-colors;
+    @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
   }
 
   /* Dark section utility */
   .section-dark {
     background-color: hsl(0 0% 7%);
-    color: hsl(0 0% 96%);
-  }
-
-  .section-dark .text-muted-foreground {
-    color: hsl(0 0% 63%);
+    color: hsl(0 0% 100%);
+    --foreground: 0 0% 100%;
+    --muted-foreground: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --popover-foreground: 0 0% 100%;
   }
 
   /* Accent section utility */
   .section-accent {
     background-color: hsl(25 82% 55%);
     color: hsl(0 0% 100%);
-  }
-
-  .section-accent .text-muted-foreground {
-    color: hsl(0 0% 100% / 0.7);
+    --foreground: 0 0% 100%;
+    --muted-foreground: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --popover-foreground: 0 0% 100%;
   }
 }
 
@@ -189,4 +209,46 @@
 .link-underline:hover::after {
   transform: scaleX(1);
   transform-origin: left;
+}
+
+/* Global glass cursor — toggled by `GlassCursor` (fine pointer, no reduced motion) */
+html.glass-cursor-on,
+html.glass-cursor-on body,
+html.glass-cursor-on body * {
+  cursor: none !important;
+}
+
+html.glass-cursor-on .glass-cursor-root {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  border-radius: 50%;
+  border: none;
+  /* Light “glass” fill + difference blend inverts whatever is behind → readable on any colour */
+  background: hsl(0 0% 100% / 0.72);
+  mix-blend-mode: difference;
+  backdrop-filter: blur(12px) saturate(1.25);
+  -webkit-backdrop-filter: blur(12px) saturate(1.25);
+  /* Feathered edge = blurred border (no hard ring) */
+  -webkit-mask-image: radial-gradient(
+    circle closest-side at center,
+    #000 22%,
+    rgb(0 0 0 / 0.55) 48%,
+    rgb(0 0 0 / 0.22) 64%,
+    transparent 88%
+  );
+  mask-image: radial-gradient(
+    circle closest-side at center,
+    #000 22%,
+    rgb(0 0 0 / 0.55) 48%,
+    rgb(0 0 0 / 0.22) 64%,
+    transparent 88%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  will-change: transform;
 }

@@ -1,95 +1,134 @@
-import { Link } from "react-router-dom";
+import CallToAction from "@/components/home/CallToAction";
 
-const caseStudies = [
+type GalleryItem = {
+  /** Tailwind width classes */
+  widthClass: string;
+  aspectClass: string;
+  /** Solid fill — no mock imagery so block layout reads clearly */
+  color: string;
+};
+
+type CaseStudy = {
+  tags: string[];
+  titleBold: string;
+  colA: string;
+  colB: string;
+  gallery: GalleryItem[];
+};
+
+const caseStudies: CaseStudy[] = [
   {
-    title: "Meridian Cultural Centre",
-    category: "Brand · Web Design · Development",
-    context: "A cultural venue bridging Italian and British arts programming needed a cohesive identity and digital platform.",
-    outcome: "Complete brand identity, bilingual website, and event management system serving 15,000+ annual visitors.",
+    tags: ["Website", "Charity", "Architectural Education"],
+    titleBold: "Our Hut:",
+    colA:
+      "Website for an architectural education charity based in London, designed to present programmes clearly and make resources easier to access.",
+    colB:
+      "The build focuses on clear navigation, fast loading pages, and a flexible structure the team can maintain as projects evolve.",
+    gallery: [
+      { widthClass: "w-[42%] min-w-[220px] max-w-[340px]", aspectClass: "aspect-[4/5]", color: "#1a1a1a" },
+      { widthClass: "w-[28%] min-w-[160px] max-w-[240px]", aspectClass: "aspect-square", color: "#E8B020" },
+      { widthClass: "w-[38%] min-w-[200px] max-w-[320px]", aspectClass: "aspect-[3/4]", color: "#262626" },
+      { widthClass: "w-[22%] min-w-[140px] max-w-[180px]", aspectClass: "aspect-[2/3]", color: "#43CCBC" },
+      { widthClass: "w-[34%] min-w-[200px] max-w-[300px]", aspectClass: "aspect-[5/6]", color: "#141414" },
+      { widthClass: "w-[26%] min-w-[160px] max-w-[220px]", aspectClass: "aspect-[3/5]", color: "#9484D2" },
+    ],
   },
   {
-    title: "Terraverde Organic",
-    category: "Brand · E-commerce",
-    context: "A family-run organic producer expanding from local markets to European-wide online sales.",
-    outcome: "Brand system and e-commerce platform handling multi-currency, multi-language product catalogue.",
+    tags: ["Website", "Branding", "Law Firm"],
+    titleBold: "RK Abogados:",
+    colA:
+      "Website and branding for a law firm in Santiago, shaped to communicate trust, clarity, and professionalism across every client touchpoint.",
+    colB:
+      "The visual system and site structure were developed together so tone, hierarchy, and usability support both reputation and day-to-day enquiries.",
+    gallery: [
+      { widthClass: "w-[30%] min-w-[180px] max-w-[260px]", aspectClass: "aspect-square", color: "#1F8F6A" },
+      { widthClass: "w-[40%] min-w-[220px] max-w-[360px]", aspectClass: "aspect-[4/5]", color: "#222222" },
+      { widthClass: "w-[24%] min-w-[150px] max-w-[200px]", aspectClass: "aspect-[2/3]", color: "#2e2e2e" },
+      { widthClass: "w-[32%] min-w-[190px] max-w-[280px]", aspectClass: "aspect-[5/7]", color: "#F25C3D" },
+      { widthClass: "w-[36%] min-w-[210px] max-w-[320px]", aspectClass: "aspect-[3/4]", color: "#181818" },
+      { widthClass: "w-[28%] min-w-[170px] max-w-[240px]", aspectClass: "aspect-square", color: "#303030" },
+    ],
   },
   {
-    title: "Lumen Foundation",
-    category: "Web Design · Development",
-    context: "A non-profit supporting digital literacy needed a clear, accessible website to communicate impact and attract donors.",
-    outcome: "Accessible, fast-loading website with integrated donation flow and impact reporting dashboard.",
-  },
-  {
-    title: "Forge & Frame",
-    category: "Brand Identity",
-    context: "An architectural photography studio needed an identity that reflected precision and craft.",
-    outcome: "Minimal brand system with custom typography, stationery suite, and portfolio website.",
+    tags: ["Editorial", "Content", "Travel Blog"],
+    titleBold: "The Scrapbookers:",
+    colA:
+      "A travel blog built to support storytelling through rich content, readable long-form layouts, and an editorial rhythm that feels personal.",
+    colB:
+      "The platform prioritises discoverability and ease of publishing, making it simple to add destinations, guides, and photo-led posts over time.",
+    gallery: [
+      { widthClass: "w-[38%] min-w-[220px] max-w-[340px]", aspectClass: "aspect-[4/5]", color: "#1c1c1c" },
+      { widthClass: "w-[26%] min-w-[160px] max-w-[220px]", aspectClass: "aspect-[2/3]", color: "#BFE0DE" },
+      { widthClass: "w-[34%] min-w-[200px] max-w-[300px]", aspectClass: "aspect-square", color: "#252525" },
+      { widthClass: "w-[30%] min-w-[180px] max-w-[260px]", aspectClass: "aspect-[3/5]", color: "#2a2a2a" },
+      { widthClass: "w-[22%] min-w-[140px] max-w-[190px]", aspectClass: "aspect-[2/3]", color: "#9484D2" },
+    ],
   },
 ];
 
 const Work = () => {
   return (
-    <main className="pt-32 md:pt-44 pb-32">
+    <main className="min-h-screen bg-black text-white pt-28 md:pt-36 pb-24 md:pb-32">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="max-w-4xl mb-28 animate-fade-up">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">WORK</p>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[1.1] mb-10">
+        <header className="max-w-5xl mb-20 md:mb-28">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[1.08] text-white">
             Selected
             <br />
-            <span className="font-editorial">case studies.</span>
+            <span className="font-semibold">case studies.</span>
           </h1>
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl">
+          <p className="mt-8 text-sm md:text-base text-white leading-relaxed max-w-2xl">
             Each project follows a structured approach: understand the problem, define the strategy, design the solution, build it right.
           </p>
-        </div>
+        </header>
 
         <div className="space-y-0">
-          {caseStudies.map((study, index) => (
-            <article key={study.title} className="border-t border-border py-12 md:py-16">
-              <div className="grid md:grid-cols-12 gap-8 items-start">
-                <div className="md:col-span-1">
-                  <span className="text-xs text-muted-foreground tracking-[0.2em]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <div className="md:col-span-5">
-                  <div className="bg-secondary aspect-[4/3]" />
-                </div>
-                <div className="md:col-span-6">
-                  <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-                    {study.category}
-                  </p>
-                  <h2 className="text-2xl md:text-3xl font-light tracking-tight mb-6">
-                    {study.title}
+          {caseStudies.map((study) => (
+            <article key={study.titleBold} className="border-t border-white/10 first:border-t-0 pt-16 md:pt-24 pb-20 md:pb-28">
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12 items-start">
+                <div className="xl:col-span-6">
+                  <h2 className="text-2xl md:text-4xl lg:text-[2.35rem] font-light leading-snug tracking-tight text-white">
+                    <span className="font-semibold">{study.titleBold}</span>
                   </h2>
-                  <div className="space-y-5">
-                    <div>
-                      <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">Context</p>
-                      <p className="text-sm text-muted-foreground leading-[1.8]">{study.context}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">Outcome</p>
-                      <p className="text-sm text-muted-foreground leading-[1.8]">{study.outcome}</p>
-                    </div>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {study.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center rounded-full border border-white/30 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-white"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
+                <div className="xl:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+                  <p className="text-sm md:text-[15px] leading-[1.75] text-white">{study.colA}</p>
+                  <p className="text-sm md:text-[15px] leading-[1.75] text-white">{study.colB}</p>
+                </div>
+              </div>
+
+              <div
+                className="mt-12 md:mt-16 flex flex-row flex-nowrap gap-3 md:gap-4 overflow-x-auto overflow-y-visible pb-2 -mx-6 px-6 lg:-mx-12 lg:px-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {study.gallery.map((item, i) => (
+                  <div
+                    key={`${study.titleBold}-${i}`}
+                    className={`shrink-0 overflow-hidden ${item.widthClass} ${item.aspectClass}`}
+                  >
+                    <div
+                      className="h-full w-full min-h-[8rem]"
+                      style={{ backgroundColor: item.color }}
+                      aria-hidden
+                    />
+                  </div>
+                ))}
               </div>
             </article>
           ))}
         </div>
 
-        <div className="border-t border-border pt-20 mt-8">
-          <h2 className="text-2xl md:text-4xl font-light tracking-tight mb-6">
-            Your project could be next.
-          </h2>
-          <Link
-            to="/contact"
-            className="link-underline text-sm tracking-wide text-foreground/80 hover:text-foreground transition-opacity"
-          >
-            Start a conversation
-          </Link>
-        </div>
       </div>
+
+      <CallToAction sectionClassName="bg-black" />
     </main>
   );
 };

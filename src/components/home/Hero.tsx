@@ -1,157 +1,332 @@
-import { Link } from "react-router-dom";
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
+import HeroPendulum3d from "@/components/home/HeroPendulum3d";
 
 type HighlightVariant = "scribble" | "underline-wave" | "circle";
-type TooltipPosition = "top" | "bottom";
+
+/** Matches `ServicesPreview` sticky block backgrounds */
+const SERVICE_ACCENT = {
+  brand: "#9484D2",
+  webDesign: "#43CCBC",
+  webDev: "#0D0D0D",
+} as const;
+
+type ServiceAccentKey = keyof typeof SERVICE_ACCENT;
+
+const HandDrawnRing = ({ className, style }: { className?: string; style?: CSSProperties }) => (
+  <svg
+    className={`pointer-events-none ${className ?? ""}`}
+    style={style}
+    viewBox="0 0 200 52"
+    fill="none"
+    preserveAspectRatio="none"
+    aria-hidden
+  >
+    <path
+      d="M14 26 C 20 10, 48 5, 98 7 C 152 9, 186 14, 190 26 C 194 40, 158 48, 98 46 C 38 44, 10 36, 14 26 Z"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      opacity={0.88}
+    />
+    <path
+      d="M22 28 C 30 14, 58 10, 100 11 C 142 12, 176 18, 182 30 C 186 38, 150 44, 100 42 C 50 40, 16 34, 22 28 Z"
+      stroke="currentColor"
+      strokeWidth="0.85"
+      strokeLinecap="round"
+      opacity={0.5}
+    />
+    <path
+      d="M18 24 C 26 8, 52 4, 102 6 C 148 8, 184 16, 188 28"
+      stroke="currentColor"
+      strokeWidth="0.7"
+      strokeLinecap="round"
+      opacity={0.35}
+    />
+  </svg>
+);
+
+const HandDrawnUnderline = ({ className, style }: { className?: string; style?: CSSProperties }) => (
+  <svg
+    className={`pointer-events-none ${className ?? ""}`}
+    style={style}
+    viewBox="0 0 200 14"
+    fill="none"
+    preserveAspectRatio="none"
+    aria-hidden
+  >
+    <path
+      d="M3 9 C 22 5, 38 11, 55 7 S 88 10, 102 6 S 128 11, 145 7 S 172 10, 197 6"
+      stroke="currentColor"
+      strokeWidth="1.35"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5 11 C 28 8, 48 12, 72 9 S 110 12, 132 8 S 165 11, 195 8"
+      stroke="currentColor"
+      strokeWidth="0.75"
+      strokeLinecap="round"
+      opacity={0.45}
+    />
+    <path
+      d="M8 7 L 24 9 L 40 6 L 58 9 L 78 5 L 98 8 L 118 5 L 138 9 L 158 6 L 178 9 L 192 7"
+      stroke="currentColor"
+      strokeWidth="0.55"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      opacity={0.3}
+    />
+  </svg>
+);
+
+const HandDrawnScribbleLine = ({ className, style }: { className?: string; style?: CSSProperties }) => (
+  <svg
+    className={`pointer-events-none ${className ?? ""}`}
+    style={style}
+    viewBox="0 0 200 12"
+    fill="none"
+    preserveAspectRatio="none"
+    aria-hidden
+  >
+    <path
+      d="M2 7 C 18 3, 34 9, 52 5 S 88 9, 104 5 S 140 10, 158 4 S 182 9, 198 5"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M4 9 C 32 6, 56 11, 80 7 S 124 10, 150 6 S 178 10, 196 7"
+      stroke="currentColor"
+      strokeWidth="0.65"
+      strokeLinecap="round"
+      opacity={0.4}
+    />
+  </svg>
+);
+
+/** Curved hand-drawn arrow; rotate via wrapper to point where needed */
+const HandDrawnCurveArrow = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: CSSProperties;
+}) => (
+  <svg
+    className={`shrink-0 ${className ?? ""}`}
+    style={style}
+    viewBox="0 0 64 48"
+    fill="none"
+    aria-hidden
+  >
+    <path
+      d="M6 42 C 18 16, 38 6, 58 10"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M9 40 C 21 18, 40 8, 56 12"
+      stroke="currentColor"
+      strokeWidth="0.6"
+      strokeLinecap="round"
+      opacity={0.4}
+    />
+    <path
+      d="M50 4 L58 10 L54 18"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M52 6 L57 10 L54 15"
+      stroke="currentColor"
+      strokeWidth="0.55"
+      strokeLinecap="round"
+      opacity={0.4}
+    />
+  </svg>
+);
 
 interface HighlightWordProps {
   children: ReactNode;
   variant: HighlightVariant;
-  tooltip: string;
-  position?: TooltipPosition;
+  /** Stroke color for the hand-drawn mark only; text stays black */
+  accentHex: string;
 }
 
-const HighlightWord = ({ children, variant, tooltip, position = "top" }: HighlightWordProps) => {
+const highlightSerif = { fontFamily: '"Instrument Serif", Georgia, serif', fontStyle: "italic" as const };
+
+const HighlightWord = ({ children, variant, accentHex }: HighlightWordProps) => {
+  const ink = { color: accentHex } as const;
+
+  const textStyle: CSSProperties | undefined = variant === "circle" ? highlightSerif : undefined;
+  const textClass =
+    variant === "circle"
+      ? ""
+      : variant === "underline-wave"
+        ? "font-sans font-normal not-italic"
+        : "font-sans font-semibold not-italic";
+
   const renderHighlight = () => {
     switch (variant) {
       case "scribble":
         return (
-          <svg
-            className="absolute left-0 -bottom-2 w-full h-3 text-accent pointer-events-none"
-            viewBox="0 0 200 12"
-            preserveAspectRatio="none"
-            fill="none"
-          >
-            <path
-              d="M2 7 C 30 2, 60 10, 90 5 S 150 9, 198 4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
+          <HandDrawnScribbleLine
+            className="absolute left-0 -bottom-1 w-full h-3.5 md:h-4"
+            style={ink}
+          />
         );
       case "underline-wave":
         return (
-          <svg
-            className="absolute left-0 -bottom-2 w-full h-4 text-accent pointer-events-none"
-            viewBox="0 0 200 14"
-            preserveAspectRatio="none"
-            fill="none"
-          >
-            <path
-              d="M2 8 Q 25 1, 50 7 T 100 7 T 150 7 T 198 7"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-            />
-            <path
-              d="M4 11 Q 50 13, 100 10 T 196 11"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              opacity="0.55"
-            />
-          </svg>
+          <HandDrawnUnderline
+            className="absolute left-0 -bottom-1 w-full h-4 md:h-[1.1rem]"
+            style={ink}
+          />
         );
       case "circle":
         return (
-          <svg
-            className="absolute -left-2 -right-2 -top-1 -bottom-1 w-[calc(100%+1rem)] h-[calc(100%+0.5rem)] text-accent pointer-events-none"
-            viewBox="0 0 220 50"
-            preserveAspectRatio="none"
-            fill="none"
-          >
-            <path
-              d="M30 8 C 80 2, 160 1, 200 12 C 218 22, 210 40, 150 44 C 90 48, 20 46, 8 32 C 0 18, 12 10, 30 8 Z"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              fill="none"
-            />
-          </svg>
+          <HandDrawnRing
+            className="absolute -left-2 -right-3 -top-2 -bottom-2 w-[calc(100%+1.25rem)] h-[calc(100%+1rem)] md:h-[calc(100%+0.85rem)]"
+            style={ink}
+          />
         );
     }
   };
 
-  const isTop = position === "top";
-
   return (
-    <span className="relative inline-block group cursor-help font-editorial">
+    <span className={`relative inline-block text-[#0D0D0D] ${textClass}`} style={textStyle}>
       <span className="relative z-10">{children}</span>
       {renderHighlight()}
-
-      {/* Tooltip */}
-      <span
-        className={`pointer-events-none absolute left-1/2 -translate-x-1/2 ${
-          isTop ? "bottom-full mb-6" : "top-full mt-6"
-        } opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-20`}
-      >
-        <span className="relative block whitespace-nowrap">
-          <span className="block text-xs md:text-sm tracking-wide text-accent font-editorial italic px-2">
-            {tooltip}
-          </span>
-          {/* Arrow from text toward word */}
-          <svg
-            className={`absolute left-1/2 -translate-x-1/2 ${
-              isTop ? "top-full" : "bottom-full rotate-180"
-            } w-8 h-6 text-accent`}
-            viewBox="0 0 32 24"
-            fill="none"
-          >
-            <path
-              d="M16 2 C 12 8, 18 14, 14 20"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d="M14 20 L 10 16 M 14 20 L 18 17"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              fill="none"
-            />
-          </svg>
-        </span>
-      </span>
     </span>
   );
 };
 
+const caveatStyle = { fontFamily: '"Caveat", cursive' } as const;
+
+type ArrowSide = "left" | "right";
+
+interface ScatteredNote {
+  text: string;
+  accent: ServiceAccentKey;
+  /** Absolute positioning classes within the scatter container */
+  position: string;
+  /** Rotation applied to the note (degrees) */
+  rotate: number;
+  /** Arrow sits to the left or right of the note */
+  arrowSide: ArrowSide;
+  /** Arrow rotation (degrees) — base drawing points up-right from its bottom-left */
+  arrowRotate: number;
+}
+
+const SCATTERED_NOTES: ScatteredNote[] = [
+  {
+    text: "A logo, and the soul behind it.",
+    accent: "brand",
+    position: "top-2 left-[4%] md:left-[6%]",
+    rotate: -6,
+    arrowSide: "right",
+    arrowRotate: -18,
+  },
+  {
+    text: "Websites that don't make people sigh.",
+    accent: "webDesign",
+    position: "top-[5.5rem] md:top-[6rem] right-[4%] md:right-[10%]",
+    rotate: 4,
+    arrowSide: "left",
+    arrowRotate: 24,
+  },
+  {
+    text: "Fast, clear code — built to last.",
+    accent: "webDev",
+    position: "bottom-0 left-[30%] md:left-[38%]",
+    rotate: -3,
+    arrowSide: "left",
+    arrowRotate: -52,
+  },
+];
+
 const Hero = () => {
   return (
-    <section className="min-h-[80vh] flex items-center pt-28 pb-16">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="max-w-5xl">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-10 animate-fade-up font-extrabold">
-            CREATIVITY WITH A FIXED POINT
-          </p>
-          <h1 className="text-3xl md:text-5xl lg:text-[3.5rem] font-light tracking-tight leading-[1.3] mb-14 animate-fade-up-delay-1">
-            <HighlightWord
-              variant="circle"
-              tooltip="A logo, and the soul behind it."
-              position="bottom"
-            >
-              Branding
-            </HighlightWord>
-            ,{" "}
-            <HighlightWord
-              variant="underline-wave"
-              tooltip="Websites that don't make people sigh."
-              position="top"
-            >
-              web design
-            </HighlightWord>
-            , and development for businesses that value a different point of view.
+    <section className="relative flex min-h-svh flex-col justify-end bg-[#F25C3D] px-6 pb-14 pt-32 text-[#0D0D0D] md:px-8 md:pb-20 md:pt-36 lg:px-12">
+      <HeroPendulum3d />
+      <div className="container relative z-10 mx-auto w-full max-w-[1400px]">
+        <div className="animate-fade-up-delay-1 ml-auto w-full max-w-[46rem] text-right">
+          <h1 className="font-sans text-3xl font-light not-italic leading-[1.35] tracking-tight text-[#0D0D0D] md:text-[2.65rem] lg:text-[3.15rem]">
+              <HighlightWord variant="circle" accentHex={SERVICE_ACCENT.brand}>
+                Branding
+              </HighlightWord>
+              {", "}
+              <HighlightWord variant="underline-wave" accentHex={SERVICE_ACCENT.webDesign}>
+                web design
+              </HighlightWord>
+              {", and "}
+              <HighlightWord variant="scribble" accentHex={SERVICE_ACCENT.webDev}>
+                development
+              </HighlightWord>
+              {" for businesses that value a different point of view."}
           </h1>
-          <Link
-            to="/work"
-            className="link-underline text-sm tracking-wide text-foreground/80 hover:text-foreground transition-opacity animate-fade-up-delay-2"
-          >
-            See our work
-          </Link>
         </div>
+
+          {/* Scattered annotations — hidden on hero to match layout reference (pendulum + headline only) */}
+          <div className="relative mt-10 hidden h-[13rem] md:h-[14rem]">
+            {SCATTERED_NOTES.map((n) => {
+              const hex = SERVICE_ACCENT[n.accent];
+              const arrow = (
+                <HandDrawnCurveArrow
+                  className="w-10 h-8 md:w-12 md:h-10"
+                  style={{
+                    color: hex,
+                    transform: `rotate(${n.arrowRotate}deg)`,
+                  }}
+                />
+              );
+              return (
+                <div
+                  key={n.text}
+                  className={`absolute ${n.position} max-w-[14rem] md:max-w-[15rem]`}
+                  style={{ transform: `rotate(${n.rotate}deg)` }}
+                >
+                  <div
+                    className={`flex items-end gap-1.5 ${
+                      n.arrowSide === "left" ? "flex-row" : "flex-row-reverse"
+                    }`}
+                  >
+                    {arrow}
+                    <p
+                      className="text-lg md:text-xl leading-snug text-[#0D0D0D]"
+                      style={caveatStyle}
+                    >
+                      {n.text}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Mobile fallback — stacked, no rotation */}
+          <ul className="mt-8 space-y-4 sm:hidden">
+            {SCATTERED_NOTES.map((n) => {
+              const hex = SERVICE_ACCENT[n.accent];
+              return (
+                <li key={n.text} className="flex items-start gap-2">
+                  <HandDrawnCurveArrow
+                    className="w-8 h-7 mt-1"
+                    style={{ color: hex, transform: "rotate(-15deg)" }}
+                  />
+                  <p
+                    className="text-lg leading-snug text-[#0D0D0D] max-w-[16rem]"
+                    style={caveatStyle}
+                  >
+                    {n.text}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
       </div>
     </section>
   );
