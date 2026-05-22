@@ -1,11 +1,9 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 
 const SIZE = 28;
 
-/**
- * Site-wide custom cursor: small frosted disc with difference blending so it stays visible on any background.
- * Disabled on coarse pointers and when the user prefers reduced motion.
- */
 export function GlassCursor() {
   const pos = useRef({ x: -100, y: -100 });
   const raf = useRef<number>(0);

@@ -2,7 +2,7 @@ import HeroPendulum3d from "@/components/home/HeroPendulum3d";
 
 const Hero = () => {
   return (
-    <section data-pendolo-hero className="relative min-h-svh overflow-hidden bg-[#fe7b02] text-black">
+    <section data-pendolo-hero className="relative min-h-svh overflow-hidden bg-[#F25C3D] text-black">
       <HeroPendulum3d />
 
       <div className="relative z-10 flex min-h-svh flex-col px-5 pb-24 pt-24 md:px-8 md:pb-28 md:pt-28 lg:px-12 lg:pt-32">

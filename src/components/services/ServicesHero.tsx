@@ -1,7 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 
-const SECOND_LINE = "Let\u2019s decide together.";
+const SECOND_LINE = "Let’s decide together.";
 const SECOND_LINE_DELAY_S = 2;
 const LETTER_STAGGER_S = 0.045;
 
@@ -11,9 +13,7 @@ const headingClass =
 function GlowLine({ children }: { children: ReactNode }) {
   const reduceMotion = useReducedMotion();
   return (
-    <span className={reduceMotion ? "block" : "services-hero-glow-flash block"}>
-      {children}
-    </span>
+    <span className={reduceMotion ? "block" : "services-hero-glow-flash block"}>{children}</span>
   );
 }
 
@@ -30,12 +30,10 @@ function LetterByLetterLine({ text }: { text: string }) {
         <span
           key={`${char}-${i}`}
           className="services-hero-letter-flash inline-block"
-          style={{
-            animationDelay: `${SECOND_LINE_DELAY_S + i * LETTER_STAGGER_S}s`,
-          }}
+          style={{ animationDelay: `${SECOND_LINE_DELAY_S + i * LETTER_STAGGER_S}s` }}
           aria-hidden="true"
         >
-          {char === " " ? "\u00a0" : char}
+          {char === " " ? " " : char}
         </span>
       ))}
     </span>

@@ -1,10 +1,13 @@
-import { useLocation } from "react-router-dom";
+"use client";
+
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const Footer = () => {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-  const lightOnBackdrop = isHome || location.pathname === "/contact" || location.pathname === "/services";
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const lightOnBackdrop =
+    isHome || pathname === "/contact" || pathname === "/services";
 
   return (
     <footer
@@ -19,11 +22,16 @@ const Footer = () => {
           <p>Based in UK</p>
         </div>
         <div className="md:text-center">
-          <a href="mailto:hello@pendolo.studio" className="block text-inherit transition-opacity hover:opacity-80">
+          <a
+            href="mailto:hello@pendolo.studio"
+            className="block text-inherit transition-opacity hover:opacity-80"
+          >
             hello@pendolo.studio
           </a>
         </div>
-        <div className="col-span-2 text-right md:col-span-1">© {new Date().getFullYear()} Pendolo</div>
+        <div className="col-span-2 text-right md:col-span-1">
+          © {new Date().getFullYear()} Pendolo
+        </div>
       </div>
     </footer>
   );

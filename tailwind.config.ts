@@ -1,11 +1,10 @@
 import type { Config } from "tailwindcss";
 
-/** Matches `body` / headings in `src/index.css` — single family site-wide except homepage hero accents. */
 const interStack = ['"Inter"', '"Helvetica Neue"', "Helvetica", "Arial", "sans-serif"] as const;
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
     container: {
@@ -21,7 +20,6 @@ export default {
         display: [...interStack],
         body: [...interStack],
         serif: [...interStack],
-        /** Condensed slab — Rokkitt */
         slab: ['"Rokkitt"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
@@ -57,16 +55,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
         },
       },
       borderRadius: {

@@ -1,18 +1,20 @@
-import { Link, useLocation } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import blackLogo from "../../black_logo.svg";
 
 const Navbar = () => {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-  const navOnDarkBg = location.pathname === "/contact" || location.pathname === "/services";
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const navOnDarkBg = pathname === "/contact" || pathname === "/services";
 
   return (
     <nav data-navbar className="fixed left-0 right-0 top-0 z-50 px-3 pt-3 md:px-4 md:pt-4 lg:px-5">
       <div className={cn("flex justify-between", isHome ? "items-start" : "items-center")}>
-        <Link to="/" aria-label="Pendolo home">
+        <Link href="/" aria-label="Pendolo home">
           <img
-            src={blackLogo}
+            src="/black_logo.svg"
             alt="Pendolo"
             className={cn(
               "h-auto shrink-0",
@@ -30,10 +32,10 @@ const Navbar = () => {
             isHome && "mt-0.5 shrink-0",
           )}
         >
-          <Link to="/services" className="transition-opacity hover:opacity-70">
+          <Link href="/services" className="transition-opacity hover:opacity-70">
             Services
           </Link>
-          <Link to="/contact" className="transition-opacity hover:opacity-70">
+          <Link href="/contact" className="transition-opacity hover:opacity-70">
             Contact
           </Link>
         </div>
