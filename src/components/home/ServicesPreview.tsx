@@ -1,17 +1,16 @@
-import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 
 const services = [
   {
     title: "Brand",
     description:
-      "Identity systems that hold up across every touchpoint. From strategy to guidelines, built for consistency and longevity.",
+      "Identity systems that communicate clearly and hold up over time. We start with strategy and build outward - from naming and positioning to the visual system that carries it all.",
     items: [
       "Brand Strategy",
-      "Identity design",
-      "Identity guidelines",
+      "Identity Design",
+      "Identity Guidelines",
       "Editorial design",
-      "Marketing materials",
+      "Marketing Materials",
       "Packaging",
     ],
     bg: "#9484D2",
@@ -20,14 +19,14 @@ const services = [
   {
     title: "Web Design",
     description:
-      "Research-driven design that balances form and function. Clear information architecture, strong visual systems, considered user experience.",
+      "Research-driven web design that balances usability with visual quality. We design interfaces that respect users' time and present content with clarity.",
     items: [
       "UX research",
       "Site map",
       "Website architecture",
       "UI Design",
       "UI Kits",
-      "Design systems",
+      "Design Systems",
       "Figma prototypes",
     ],
     bg: "#43CCBC",
@@ -36,8 +35,17 @@ const services = [
   {
     title: "Web Development",
     description:
-      "Clean, performant code with deployment discipline. From implementation through monitoring, built for speed and reliability.",
-    items: ["Website Implementation", "E-commerce", "Performance Testing", "Monitoring"],
+      "Clean code, fast sites, reliable deployment. We build with performance as a baseline, not an afterthought. Every site ships with monitoring and is optimized for real-world conditions.",
+    items: [
+      "Website Implementation",
+      "E-commerce Development",
+      "AI Agent Implementation",
+      "Blog Implementation",
+      "Deployment",
+      "Monitoring",
+      "Performance Testing",
+      "Tracking & Analytics",
+    ],
     bg: "#FE7B02",
     fg: "#0D0D0D",
   },
@@ -132,8 +140,6 @@ function FallingSkillChips({ items }: { items: readonly string[] }) {
 }
 
 const ServicesPreview = () => {
-  const lastIndex = services.length - 1;
-
   return (
     <section className="relative">
       {/* Stacking sticky blocks — “What we do” title is on the mockup above (fade-in). */}
@@ -141,17 +147,23 @@ const ServicesPreview = () => {
         {services.map((service, i) => (
           <div
             key={service.title}
-            className="sticky top-0 flex h-screen w-full items-start pt-24 md:pt-32 lg:pt-36"
+            className="sticky top-0 flex h-screen w-full items-start pt-24 md:pt-24 lg:pt-24"
             style={{
               backgroundColor: service.bg,
               color: service.fg,
               zIndex: i + 1,
             }}
           >
-            <div className="container mx-auto w-full px-6 lg:px-12">
+            <div
+              className={
+                i === services.length - 1
+                  ? "container mx-auto w-full px-6 pb-24 md:pb-28 lg:px-12"
+                  : "container mx-auto w-full px-6 lg:px-12"
+              }
+            >
               <div className="grid md:grid-cols-12 items-start gap-10 md:gap-16">
-                <div className="md:col-span-5">
-                  <h3 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
+                <div className="md:col-span-5 self-start">
+                  <h3 className="font-slab-heading m-0 text-3xl font-normal uppercase leading-[1.05] md:text-5xl lg:text-6xl">
                     {service.title}
                   </h3>
                   <p className="mt-5 max-w-xl text-base leading-relaxed md:mt-7 md:text-lg">
@@ -164,13 +176,6 @@ const ServicesPreview = () => {
               </div>
             </div>
 
-            {i === lastIndex ? (
-              <div className="pointer-events-none absolute bottom-6 right-6 z-20 md:bottom-10 md:right-10 lg:bottom-12 lg:right-12">
-                <Link to="/services" className="cta-marketing pointer-events-auto">
-                  View all services
-                </Link>
-              </div>
-            ) : null}
           </div>
         ))}
       </div>

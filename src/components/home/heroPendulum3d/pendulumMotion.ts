@@ -35,7 +35,7 @@ export function stepPendulum(sim: PendulumSim, { dt, mouseSmoothedNdcX, mouseImp
 
   const g = 9.82;
   const length = PENDULUM_ARM;
-  const damping = 0.62;
+  const damping = 0.52;
   const driveOmega = 0.38;
   const driveAmp = 0.32;
   const driveOmega2 = 0.53;
@@ -43,7 +43,7 @@ export function stepPendulum(sim: PendulumSim, { dt, mouseSmoothedNdcX, mouseImp
   /** radians — how far cursor can shift the virtual equilibrium */
   const mouseMaxBias = 0.78;
   /** spring toward that equilibrium (higher = snappier cursor pull) */
-  const mouseSpring = 0.28;
+  const mouseSpring = 0.46;
   const driveMix = 0.2;
 
   sim.t += dtClamped;
@@ -59,7 +59,7 @@ export function stepPendulum(sim: PendulumSim, { dt, mouseSmoothedNdcX, mouseImp
   const drag = -damping * sim.omega;
   const driveTorque = driveMix * drive;
   const mouseTorque = -mouseSpring * (sim.theta - equilibriumBias);
-  const impulseTorque = mouseImpulse * 6.2;
+  const impulseTorque = mouseImpulse * 8.6;
 
   const alpha = pendulum + drag + driveTorque + mouseTorque + impulseTorque;
   sim.omega += alpha * dtClamped;

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef } from "react";
 
-const IMPULSE_PER_PX = 0.00028;
-const SMOOTH_TAU_SEC = 0.2;
+const IMPULSE_PER_PX = 0.00042;
+/** Lower = pendulum biases toward cursor X sooner (still low-pass filtered for stability). */
+const SMOOTH_TAU_SEC = 0.09;
 
 export type HeroPendulumMouseApi = {
   /** Call once per frame before reading values */

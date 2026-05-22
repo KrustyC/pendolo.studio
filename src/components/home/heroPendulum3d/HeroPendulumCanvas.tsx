@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 import {
   createPendulumSim,
@@ -13,9 +13,13 @@ import {
   stepPendulum,
   type PendulumSim,
 } from "./pendulumMotion";
+import { FloatingChromeSpawns } from "./FloatingChromeSpawns";
 import { useHeroPendulumMouse, type HeroPendulumMouseApi } from "./useHeroPendulumMouse";
 
 const BG = new THREE.Color(HERO_PENDULUM_BG);
+
+/** CC0 outdoor plaza HDRI (Poly Haven « Royal Esplanade ») — reflections only; hero fill stays solid orange. */
+const HERO_PENDULUM_HDRI_URL = "/env/royal_esplanade_1k.hdr";
 
 function makeSoftShadowTexture(): THREE.CanvasTexture {
   const size = 128;
@@ -50,25 +54,60 @@ function RectAreaLightInit() {
   return null;
 }
 
-/** Procedural studio-style reflections (no external HDR fetch). */
-function StudioEnvironment() {
+function HdrEnvironment({
+  url,
+  environmentIntensity = 0.82,
+}: {
+  url: string;
+  environmentIntensity?: number;
+}) {
   const { gl, scene } = useThree();
+
   useLayoutEffect(() => {
-    const pmrem = new THREE.PMREMGenerator(gl);
-    const rt = pmrem.fromScene(new RoomEnvironment(), 0.018);
-    scene.environment = rt.texture;
+    const loader = new RGBELoader();
+    let cancelled = false;
+    let renderTarget: THREE.WebGLRenderTarget | null = null;
+    const prevIntensity = scene.environmentIntensity;
+
+    loader.load(
+      url,
+      (tex) => {
+        if (cancelled) {
+          tex.dispose();
+          return;
+        }
+        const pmrem = new THREE.PMREMGenerator(gl);
+        tex.mapping = THREE.EquirectangularReflectionMapping;
+        renderTarget = pmrem.fromEquirectangular(tex);
+        tex.dispose();
+        pmrem.dispose();
+        // CubeUV stays world-fixed; visible motion comes from rigid pendulum θ (see PendulumRig useFrame).
+        scene.environment = renderTarget.texture;
+        scene.environmentIntensity = environmentIntensity;
+      },
+      undefined,
+      () => {
+        if (import.meta.env.DEV && !cancelled) {
+          console.warn("[HeroPendulumCanvas] HDRI failed to load:", url);
+        }
+      },
+    );
+
     return () => {
+      cancelled = true;
       scene.environment = null;
-      rt.dispose();
-      pmrem.dispose();
+      scene.environmentIntensity = prevIntensity;
+      renderTarget?.dispose();
     };
-  }, [gl, scene]);
+  }, [gl, scene, url, environmentIntensity]);
+
   return null;
 }
 
 const SHADOW_GAP_BELOW_BOB = 0.07;
+const SHADOW_FLOOR_Y = PENDULUM_PIVOT[1] - PENDULUM_ARM - PENDULUM_BOB_RADIUS - SHADOW_GAP_BELOW_BOB;
 
-/** Soft contact-style shadow: tracks bob in XZ, sits just under the sphere in world Y */
+/** Soft floor shadow: tracks bob in XZ while staying locked to a fixed world-floor Y plane. */
 function FakeSoftShadowPlane({
   simRef,
   bobRadius,
@@ -95,9 +134,16 @@ function FakeSoftShadowPlane({
     const bx = px + h * sin;
     const by = py - h * cos;
     const bz = pz;
-    const shadowY = by - bobRadius - SHADOW_GAP_BELOW_BOB;
-    if (meshRef.current) {
-      meshRef.current.position.set(bx, shadowY, bz);
+    const shadowToBob = Math.max(0, by - bobRadius - SHADOW_FLOOR_Y);
+    if (!meshRef.current) return;
+
+    meshRef.current.position.set(bx, SHADOW_FLOOR_Y, bz);
+    const shadowScale = 1 + shadowToBob * 0.18;
+    meshRef.current.scale.set(shadowScale, shadowScale, shadowScale);
+
+    const material = meshRef.current.material;
+    if (material instanceof THREE.MeshBasicMaterial) {
+      material.opacity = THREE.MathUtils.clamp(0.82 - shadowToBob * 0.22, 0.28, 0.82);
     }
   });
 
@@ -128,6 +174,11 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
     reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }, []);
 
+  /**
+   * Keeps HDR reflections kinetic: θ drives `swing.rotation.z` so rod + bob rigid body orientation in world
+   * space updates every render—MeshPhysicalMaterial env sampling uses current world normals/view (never a
+   * static bake). Cursor / physics change θ → reflection highlights slide on the bob accordingly.
+   */
   useFrame((_, delta) => {
     if (reduceMotion.current) {
       if (swing.current) swing.current.rotation.z = sim.current.theta;
@@ -158,7 +209,7 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
               color="#2a2a2a"
               roughness={0.35}
               metalness={0.75}
-              envMapIntensity={0.55}
+              envMapIntensity={0.48}
             />
           </mesh>
           <mesh position={[0, -rodLen - bobR * 0.85, 0]} renderOrder={10}>
@@ -167,7 +218,7 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
               color="#e8eaef"
               roughness={0.045}
               metalness={0.96}
-              envMapIntensity={1.25}
+              envMapIntensity={0.95}
               clearcoat={1}
               clearcoatRoughness={0.04}
             />
@@ -204,9 +255,10 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
         rotation={[-0.4, -0.5, 0]}
       />
 
-      <StudioEnvironment />
+      <HdrEnvironment url={HERO_PENDULUM_HDRI_URL} environmentIntensity={0.82} />
 
       <PendulumRig mouse={mouse} />
+      <FloatingChromeSpawns />
     </>
   );
 }
@@ -216,6 +268,7 @@ function HeroPendulumCanvasInner() {
   return (
     <Canvas
       className="h-full w-full touch-none"
+      frameloop="always"
       dpr={[1, 2]}
       gl={{
         antialias: true,

@@ -21,6 +21,8 @@ export default {
         display: [...interStack],
         body: [...interStack],
         serif: [...interStack],
+        /** Condensed slab — Rokkitt */
+        slab: ['"Rokkitt"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

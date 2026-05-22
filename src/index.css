@@ -1,4 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rokkitt:wght@500;600;700&display=swap");
+
+@font-face {
+  font-family: "Rock Salt";
+  src: url("/RockSalt-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -61,7 +70,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /* font-family inherits from body (Inter); do not pin here — it overrides utility faces on headings */
     font-weight: 300;
     letter-spacing: -0.02em;
   }
@@ -84,12 +93,21 @@
 }
 
 @layer utilities {
+  .font-slab-heading {
+    font-family: "Alfa Slab One", "Rokkitt", ui-serif, Georgia, serif !important;
+    letter-spacing: 0.01em !important;
+  }
+
   .font-display {
     font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
   .font-body {
     font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .font-rock-salt {
+    font-family: "Rock Salt", "Comic Sans MS", "Marker Felt", cursive;
   }
 
   .font-editorial {
@@ -122,7 +140,7 @@
 
   /* Dark section utility */
   .section-dark {
-    background-color: hsl(0 0% 7%);
+    background-color: #0D0D0D;
     color: hsl(0 0% 100%);
     --foreground: 0 0% 100%;
     --muted-foreground: 0 0% 100%;
@@ -185,6 +203,82 @@
 .animate-fade-up-delay-3 {
   animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
   opacity: 0;
+}
+
+/* Services hero — glow flashes on reveal, then settles to plain white type */
+@keyframes services-hero-glow-flash {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    text-shadow:
+      0 0 6px rgba(255, 255, 255, 0.48),
+      0 0 14px rgba(255, 255, 255, 0.38),
+      0 0 30px rgba(255, 255, 255, 0.22),
+      0 0 56px rgba(255, 255, 255, 0.11);
+  }
+  40% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow:
+      0 0 6px rgba(255, 255, 255, 0.48),
+      0 0 14px rgba(255, 255, 255, 0.38),
+      0 0 30px rgba(255, 255, 255, 0.22),
+      0 0 56px rgba(255, 255, 255, 0.11);
+  }
+  46% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow:
+      0 0 6px rgba(255, 255, 255, 0.48),
+      0 0 14px rgba(255, 255, 255, 0.38),
+      0 0 30px rgba(255, 255, 255, 0.22),
+      0 0 56px rgba(255, 255, 255, 0.11);
+  }
+  64% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: none;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: none;
+  }
+}
+
+@keyframes services-hero-letter-flash {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.95),
+      0 0 20px rgba(255, 255, 255, 0.75),
+      0 0 42px rgba(255, 255, 255, 0.45),
+      0 0 80px rgba(255, 255, 255, 0.22);
+  }
+  45% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.95),
+      0 0 20px rgba(255, 255, 255, 0.75),
+      0 0 42px rgba(255, 255, 255, 0.45),
+      0 0 80px rgba(255, 255, 255, 0.22);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: none;
+  }
+}
+
+.services-hero-glow-flash {
+  animation: services-hero-glow-flash 3.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.services-hero-letter-flash {
+  opacity: 0;
+  animation: services-hero-letter-flash 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Link underline animation */
