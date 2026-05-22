@@ -1,111 +1,22 @@
 import { Link } from "react-router-dom";
-
-const serviceCategories = [
-  {
-    title: "Brand",
-    intro: "Identity systems that communicate clearly and hold up over time. We start with strategy and build outward — from naming and positioning to the visual system that carries it all.",
-    approach: "Every brand decision is grounded in research. We don't decorate — we build systems that scale across touchpoints and cultures.",
-    services: [
-      { name: "Brand Identity", desc: "Core identity development from strategy through visual expression." },
-      { name: "Brand Architecture", desc: "Structuring brand relationships for clarity and growth." },
-      { name: "Identity Design", desc: "Logos, typography, colour systems, and visual language." },
-      { name: "Identity Guidelines", desc: "Documentation that ensures consistency without policing." },
-      { name: "Marketing Materials", desc: "Print and digital collateral aligned to the brand system." },
-    ],
-  },
-  {
-    title: "Web Design",
-    intro: "Research-driven web design that balances usability with visual quality. We design interfaces that respect users' time and present content with clarity.",
-    approach: "Design starts with content architecture, not decoration. We map the user journey, then build visual systems that support it.",
-    services: [
-      { name: "Competitor Research", desc: "Understanding the landscape before making design decisions." },
-      { name: "Content Architecture", desc: "Structuring information for clarity and discoverability." },
-      { name: "Visual Concept", desc: "Defining the visual direction and design language." },
-      { name: "UX/UI Design", desc: "Interface design grounded in user needs and business goals." },
-      { name: "UI Kit", desc: "Component libraries for consistency and development efficiency." },
-      { name: "Adaptations", desc: "Responsive and multi-platform design adaptations." },
-      { name: "Website Maintenance", desc: "Ongoing design support and iterative improvement." },
-    ],
-  },
-  {
-    title: "Web Development",
-    intro: "Clean code, fast sites, reliable deployment. We build with performance as a baseline, not an afterthought. Every site ships with monitoring and is optimized for real-world conditions.",
-    approach: "We write maintainable code with clean architecture. Observability, performance testing, and deployment discipline are standard — not optional extras.",
-    services: [
-      { name: "Website Implementation", desc: "Frontend and backend development with modern frameworks." },
-      { name: "E-commerce Development", desc: "Online stores built for performance and conversion." },
-      { name: "AI Agent Implementation", desc: "Chatbots and automation integrated thoughtfully." },
-      { name: "Blog Implementation", desc: "CMS-powered editorial platforms." },
-      { name: "Deployment", desc: "Hosting, CI/CD pipelines, and infrastructure management." },
-      { name: "Monitoring", desc: "Observability tools for uptime, performance, and error tracking." },
-      { name: "Performance Testing", desc: "Load testing, Core Web Vitals optimization, speed audits." },
-      { name: "Tracking & Analytics", desc: "Privacy-conscious analytics and conversion tracking." },
-    ],
-  },
-];
+import ServicesHero from "@/components/services/ServicesHero";
+import ServicesStack from "@/components/services/ServicesStack";
 
 const Services = () => {
   return (
-    <main className="pt-32 md:pt-44 pb-32">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="max-w-4xl mb-28 animate-fade-up">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">SERVICES</p>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[1.1] mb-10">
-            Design-led.
-            <br />
-            <span className="font-editorial">Technically solid.</span>
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl">
-            Three disciplines, one coherent process. Every project benefits from design thinking and engineering rigour working together from day one.
+    <main>
+      <ServicesHero />
+      <ServicesStack />
+      <section className="bg-[#F25C3D] text-[#0D0D0D]">
+        <div className="container mx-auto flex flex-col items-start gap-6 px-6 pt-10 pb-14 md:flex-row md:items-center md:justify-between md:gap-10 md:px-10 md:pt-12 md:pb-16 lg:px-14 lg:pb-20">
+          <p className="max-w-2xl text-balance text-[clamp(1.1rem,1.6vw,1.5rem)] font-light leading-snug tracking-tight">
+            If you still have your doubts but are curious to know us, set up a free call.
           </p>
-        </div>
-
-        <div className="space-y-32">
-          {serviceCategories.map((category) => (
-            <section key={category.title} className="border-t border-border pt-16">
-              <div className="grid md:grid-cols-12 gap-12 md:gap-16">
-                <div className="md:col-span-5">
-                  <h2 className="text-2xl md:text-4xl font-light tracking-tight mb-6">
-                    {category.title}
-                  </h2>
-                  <p className="text-muted-foreground text-sm leading-[1.8] mb-6">
-                    {category.intro}
-                  </p>
-                  <p className="text-xs text-muted-foreground/60 leading-relaxed italic">
-                    {category.approach}
-                  </p>
-                </div>
-                <div className="md:col-span-7">
-                  <div className="space-y-0">
-                    {category.services.map((service) => (
-                      <div key={service.name} className="border-b border-border py-5">
-                        <h3 className="text-sm font-normal mb-1 tracking-tight">{service.name}</h3>
-                        <p className="text-sm text-muted-foreground">{service.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
-
-        <div className="border-t border-border pt-20 mt-32">
-          <h2 className="text-2xl md:text-4xl font-light tracking-tight mb-6">
-            Ready to start?
-          </h2>
-          <p className="text-muted-foreground mb-8 max-w-md text-sm leading-[1.8]">
-            Tell us about your project. We'll review it and respond within two working days.
-          </p>
-          <Link
-            to="/contact"
-            className="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border border-foreground/30 px-6 py-3 text-foreground/80 hover:text-foreground hover:border-foreground/60 transition-all duration-300"
-          >
-            Start a project
-            <span className="text-sm">→</span>
+          <Link to="/contact" className="cta-marketing shrink-0 whitespace-nowrap">
+            Book an Intro Call
           </Link>
         </div>
-      </div>
+      </section>
     </main>
   );
 };

@@ -74,7 +74,6 @@ const ProcessPage = () => {
     <main className="pt-32 md:pt-44 pb-32">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="max-w-4xl mb-28 animate-fade-up">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">PROCESS</p>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[1.1] mb-10">
             Structured,
             <br />
@@ -117,7 +116,7 @@ const ProcessPage = () => {
           </h2>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border border-foreground/30 px-6 py-3 text-foreground/80 hover:text-foreground hover:border-foreground/60 transition-all duration-300"
+            className="cta-marketing"
           >
             Start a project
             <span className="text-sm">→</span>

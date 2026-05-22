@@ -1,83 +1,48 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 const projects = [
   {
-    slug: "meridian-cultural-centre",
-    title: "Meridian Cultural Centre",
-    category: "Brand · Web Design · Development",
-    description: "Complete identity and digital presence for a cultural venue bridging Italian and British arts programming.",
+    slug: "our-hut",
+    title: "Our Hut",
+    category: "Website · Architectural Education Charity · London",
     color: "#9484D2",
   },
   {
-    slug: "terraverde-organic",
-    title: "Terraverde Organic",
-    category: "Brand · E-commerce",
-    description: "Brand identity and online store for a family-run organic producer expanding across European markets.",
+    slug: "rk-abogados",
+    title: "RK Abogados",
+    category: "Website · Branding · Law Firm · Santiago",
     color: "#43CCBC",
   },
   {
-    slug: "lumen-foundation",
-    title: "Lumen Foundation",
-    category: "Web Design · Development",
-    description: "Clear, accessible website for a non-profit supporting digital literacy initiatives in underserved communities.",
+    slug: "the-scrapbookers",
+    title: "The Scrapbookers",
+    category: "Travel Blog",
     color: "#E8E4DD",
   },
 ];
 
 const WorkPreview = () => {
   return (
-    <section className="py-32 md:py-44 border-t border-border">
+    <section className="relative z-0 py-32 md:py-44 border-t border-white/10 bg-[#0D0D0D] text-white">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-20">
           <div>
-            <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-              WORK
-            </p>
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight">
-              Selected Client
-              <br />Projects
+              Selected Projects
             </h2>
           </div>
           <Link
             to="/work"
-            className="mt-8 md:mt-0 inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border border-foreground/30 px-6 py-3 text-foreground/80 hover:text-foreground hover:border-foreground/60 transition-all duration-300 self-start"
+            className="cta-marketing mt-8 md:mt-0 self-start"
           >
             View all projects
             <span className="text-sm">→</span>
           </Link>
         </div>
 
-        {/* Draggable card carousel */}
         <DraggableCards />
-
-        <div className="space-y-0">
-          {projects.map((project, index) => (
-            <Link to="/work" key={project.title} className="block group">
-              <div className="grid md:grid-cols-12 gap-6 items-center py-8 border-t border-border">
-                <div className="md:col-span-1">
-                  <span className="text-xs text-muted-foreground tracking-wide">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <div className="md:col-span-4">
-                  <span className="inline-block text-[10px] tracking-[0.2em] uppercase text-muted-foreground border border-border rounded-full px-3 py-1 mb-3">
-                    {project.category}
-                  </span>
-                  <h3 className="text-lg md:text-xl font-light tracking-tight group-hover:text-foreground/80 transition-opacity">
-                    {project.title}
-                  </h3>
-                </div>
-                <div className="md:col-span-7">
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -85,9 +50,47 @@ const WorkPreview = () => {
 
 export default WorkPreview;
 
+type DragPersist = Record<number, { x: number; y: number }>;
+
+const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+
+/** Pixels of pointer movement above which we treat the gesture as a drag, not a tap. */
+const TAP_MOVE_THRESHOLD = 12;
+
 const DraggableCards = () => {
   const [topIndex, setTopIndex] = useState(0);
+  const [dragPersist, setDragPersist] = useState<DragPersist>({});
+  const [dragBounds, setDragBounds] = useState({ maxX: 200, maxY: 60 });
   const navigate = useNavigate();
+  const constraintsRef = useRef<HTMLDivElement>(null);
+  /** After a drag on this card index, ignore the next click (same gesture / pointer release). */
+  const skipClickForCardIndex = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    const el = constraintsRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const cw = el.clientWidth;
+      const ch = el.clientHeight;
+      const wide = window.matchMedia("(min-width: 768px)").matches;
+      const cardW = wide ? 340 : 260;
+      const cardH = wide ? 440 : 340;
+      setDragBounds({
+        maxX: Math.max(0, Math.floor((cw - cardW) / 2)),
+        maxY: Math.max(0, Math.floor((ch - cardH) / 2)),
+      });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
 
   const order = projects.map((_, i) => (i + topIndex) % projects.length);
 
@@ -96,70 +99,109 @@ const DraggableCards = () => {
   };
 
   return (
-    <div className="relative flex justify-center items-center py-16 mb-16 select-none">
-      <div className="relative w-full max-w-3xl h-[400px] md:h-[500px]">
+    <div className="relative flex w-full flex-col items-center py-16 pb-14 select-none isolate">
+      <div
+        ref={constraintsRef}
+        className="relative h-[400px] w-full overflow-hidden rounded-sm md:h-[500px]"
+      >
         {projects.map((project, projectIndex) => {
-          const stackPos = order.indexOf(projectIndex); // 0 = top
-          const depth = projects.length - 1 - stackPos; // higher = further back
+          const stackPos = order.indexOf(projectIndex);
+          const depth = projects.length - 1 - stackPos;
           const offset = (stackPos - (projects.length - 1) / 2) * 140;
           const rotation = (stackPos - (projects.length - 1) / 2) * 5;
-          const zIndex = 100 - stackPos;
+          const zIndex = 20 - stackPos;
           const isTop = stackPos === 0;
+          const extra = dragPersist[projectIndex] ?? { x: 0, y: 0 };
+          const baseScale = 1 - depth * 0.04;
 
           return (
-            <motion.div
+            <div
               key={project.slug}
-              drag
-              dragElastic={0.4}
-              dragConstraints={{ left: -400, right: 400, top: -100, bottom: 100 }}
-              dragMomentum={false}
-              onDragStart={() => bringToFront(projectIndex)}
-              onDragEnd={(_, info) => {
-                // If dragged far, cycle the next card to the top
-                if (Math.abs(info.offset.x) > 120 || Math.abs(info.offset.y) > 100) {
-                  setTopIndex((prev) => (prev + 1) % projects.length);
-                }
-              }}
-              onClick={() => {
-                if (isTop) navigate("/work");
-                else bringToFront(projectIndex);
-              }}
-              whileHover={{ y: -8 }}
-              whileTap={{ scale: 0.98 }}
-              initial={false}
-              animate={{
-                x: `calc(-50% + ${offset}px)`,
-                rotate: rotation,
-                scale: 1 - depth * 0.04,
-              }}
-              transition={{ type: "spring", stiffness: 260, damping: 28 }}
+              className="pointer-events-none absolute top-0 left-1/2 h-[340px] w-[260px] -translate-x-1/2 md:h-[440px] md:w-[340px]"
               style={{
+                marginLeft: offset,
                 zIndex,
-                backgroundColor: project.color,
-                cursor: isTop ? "grab" : "pointer",
               }}
-              className="absolute top-0 left-1/2 w-[260px] md:w-[340px] h-[340px] md:h-[440px] border border-border shadow-sm flex flex-col justify-between p-8 touch-none"
             >
-              <div>
-                <p className="text-xs tracking-[0.3em] uppercase opacity-70 text-foreground">
-                  {String(projectIndex + 1).padStart(2, "0")}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs tracking-[0.2em] uppercase mb-3 opacity-70 text-foreground">
-                  {project.category}
-                </p>
-                <h3 className="text-2xl md:text-3xl font-light tracking-tight leading-tight text-foreground">
-                  {project.title}
-                </h3>
-              </div>
-            </motion.div>
+              <motion.div
+                drag
+                dragConstraints={{
+                  left: -dragBounds.maxX,
+                  right: dragBounds.maxX,
+                  top: -dragBounds.maxY,
+                  bottom: dragBounds.maxY,
+                }}
+                dragElastic={0.06}
+                dragMomentum={false}
+                onDragStart={() => {
+                  skipClickForCardIndex.current = null;
+                  bringToFront(projectIndex);
+                }}
+                onDrag={(_, info) => {
+                  if (Math.hypot(info.offset.x, info.offset.y) >= TAP_MOVE_THRESHOLD) {
+                    skipClickForCardIndex.current = projectIndex;
+                  }
+                }}
+                onDragEnd={(_, info) => {
+                  if (Math.hypot(info.offset.x, info.offset.y) >= TAP_MOVE_THRESHOLD) {
+                    skipClickForCardIndex.current = projectIndex;
+                  }
+
+                  setDragPersist((prev) => {
+                    const cur = prev[projectIndex] ?? { x: 0, y: 0 };
+                    return {
+                      ...prev,
+                      [projectIndex]: {
+                        x: clamp(cur.x + info.offset.x, -dragBounds.maxX, dragBounds.maxX),
+                        y: clamp(cur.y + info.offset.y, -dragBounds.maxY, dragBounds.maxY),
+                      },
+                    };
+                  });
+                }}
+                onClick={() => {
+                  if (skipClickForCardIndex.current === projectIndex) {
+                    skipClickForCardIndex.current = null;
+                    return;
+                  }
+                  if (isTop) navigate("/work");
+                  else bringToFront(projectIndex);
+                }}
+                initial={false}
+                animate={{
+                  x: extra.x,
+                  y: extra.y,
+                  rotate: rotation,
+                  scale: baseScale,
+                }}
+                transition={{ type: "spring", stiffness: 260, damping: 28 }}
+                whileDrag={{ scale: baseScale * 0.99, cursor: "grabbing" }}
+                style={{
+                  backgroundColor: project.color,
+                  cursor: isTop ? "grab" : "pointer",
+                }}
+                className="pointer-events-auto flex h-full w-full touch-none flex-col justify-between border border-black/10 p-8 shadow-sm"
+              >
+                <div>
+                  <p className="text-xs tracking-[0.3em] uppercase text-[#0D0D0D]">
+                    {String(projectIndex + 1).padStart(2, "0")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs tracking-[0.2em] uppercase mb-3 text-[#0D0D0D]">
+                    {project.category}
+                  </p>
+                  <h3 className="text-2xl md:text-3xl font-light tracking-tight leading-tight text-[#0D0D0D]">
+                    {project.title}
+                  </h3>
+                </div>
+              </motion.div>
+            </div>
           );
         })}
       </div>
 
-      <p className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
-        Drag · Click to open
+      <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.3em] uppercase text-white">
+        Drag to reposition · Click the front card to open (no drag)
       </p>
     </div>
   );

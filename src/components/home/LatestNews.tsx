@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+
+/** Pixels per second — drift to the left (must be obvious but calm). */
+const AUTO_SCROLL_SPEED = 48;
 
 type Artwork = {
   bg: string;
@@ -12,12 +15,19 @@ type Artwork = {
 
 const articles: {
   ep: string;
+  /** Topic chips under the tile (replaces episode number in UI). */
+  subjects: string[];
   artwork: Artwork;
   title: string;
   date: string;
+  readTime: string;
+  /** Distinct frame proportions so tiles aren’t locked to one height (natural rhythm in the row). */
+  aspectClass: string;
 }[] = [
   {
     ep: "EP192",
+    subjects: ["Podcast", "Creativity", "Interview"],
+    aspectClass: "aspect-[3/2]",
     artwork: {
       bg: "#E8B6F0",
       fg: "#0D0D0D",
@@ -28,9 +38,12 @@ const articles: {
     title:
       "The Spark: Chris Wilson on Confidence, Chaos and Keeping Your Creativity Alive",
     date: "15 January 2026",
+    readTime: "7 min read",
   },
   {
     ep: "EP191",
+    subjects: ["Interview", "Wellbeing", "Story"],
+    aspectClass: "aspect-square",
     artwork: {
       bg: "#F25C3D",
       fg: "#0D0D0D",
@@ -41,9 +54,12 @@ const articles: {
     title:
       "From Trauma to Triumph with Chris Wilson: Creativity, Resilience & the Courage to Keep Going",
     date: "12 January 2026",
+    readTime: "6 min read",
   },
   {
     ep: "EP190",
+    subjects: ["Podcast", "Culture", "Studio"],
+    aspectClass: "aspect-[5/4]",
     artwork: {
       bg: "#BFE0DE",
       fg: "#0D0D0D",
@@ -54,9 +70,12 @@ const articles: {
     title:
       "The Spark: Joy Nazzari on Fish and Chips, Street Art Dreams and Friday Studio Nostalgia",
     date: "8 January 2026",
+    readTime: "8 min read",
   },
   {
     ep: "EP189",
+    subjects: ["Leadership", "Agency life", "People"],
+    aspectClass: "aspect-[3/4]",
     artwork: {
       bg: "#F2C744",
       fg: "#0D0D0D",
@@ -67,9 +86,12 @@ const articles: {
     title:
       "Building Belonging: Joy Nazzari on 20 Years of DNCO, Saying No and Staying Sane",
     date: "5 January 2026",
+    readTime: "5 min read",
   },
   {
     ep: "EP188",
+    subjects: ["Podcast", "Process", "Lessons"],
+    aspectClass: "aspect-[2/1]",
     artwork: {
       bg: "#1F8F6A",
       fg: "#0D0D0D",
@@ -79,6 +101,7 @@ const articles: {
     },
     title: "The Spark: Mistakes, Lessons and the Magic of Showing Up",
     date: "18 December 2025",
+    readTime: "4 min read",
   },
 ];
 
@@ -150,6 +173,7 @@ const Shape = ({ artwork }: { artwork: Artwork }) => {
 
 const LatestNews = () => {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const pauseAutoRef = useRef(false);
 
   const scrollBy = (dir: 1 | -1) => {
     const el = scrollerRef.current;
@@ -158,12 +182,98 @@ const LatestNews = () => {
     el.scrollBy({ left: amount, behavior: "smooth" });
   };
 
+  useEffect(() => {
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    let raf = 0;
+    let last = performance.now();
+    let alive = true;
+
+    const tick = (now: number) => {
+      if (!alive) return;
+      const dt = Math.min((now - last) / 1000, 0.064);
+      last = now;
+
+      if (!document.hidden && !pauseAutoRef.current) {
+        const track = el.firstElementChild as HTMLElement | null;
+        const stripB = track?.children[1] as HTMLElement | undefined;
+        /** One full cycle = first strip + gap before duplicate (see JSX: two flex strips in a row). */
+        const loopWidth = stripB?.offsetLeft ?? 0;
+
+        if (loopWidth > 0 && el.scrollWidth > el.clientWidth + 2) {
+          el.scrollLeft += AUTO_SCROLL_SPEED * dt;
+          if (el.scrollLeft >= loopWidth - 0.5) {
+            el.scrollLeft -= loopWidth;
+          }
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const articleCard = (article: (typeof articles)[number], keySuffix: string) => (
+    <Link
+      to="/blog"
+      key={`${article.ep}-${keySuffix}`}
+      className="group w-[78vw] shrink-0 sm:w-[420px] md:w-[440px]"
+    >
+      {/* Artwork tile — aspect per card so vertical rhythm matches real editorial feeds */}
+      <div className={`relative w-full overflow-hidden ${article.aspectClass}`}>
+        <div className="absolute inset-0" style={{ backgroundColor: article.artwork.bg }}>
+          <div className="relative h-full w-full">
+            <Shape artwork={article.artwork} />
+            <div
+              className="absolute left-6 top-6 text-3xl font-medium leading-[0.95] tracking-tight whitespace-pre-line md:text-5xl"
+              style={{ color: article.artwork.fg }}
+            >
+              {article.artwork.title}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Subject chips */}
+      <div className="mt-6 flex flex-wrap gap-2">
+        {article.subjects.map((label, idx) => (
+          <span
+            key={`${article.ep}-${idx}-${label}`}
+            className="inline-flex items-center rounded-full border border-foreground/25 bg-transparent px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-foreground"
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+
+      {/* Title */}
+      <h3 className="mt-5 text-xl font-light leading-snug tracking-tight text-foreground underline-offset-4 group-hover:underline md:text-2xl">
+        {article.title}
+      </h3>
+
+      {/* Date + reading time */}
+      <p className="mt-4 text-sm text-foreground">
+        {article.date} · {article.readTime}
+      </p>
+    </Link>
+  );
+
   return (
     <section className="bg-background py-32 md:py-44">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex items-end justify-between mb-12 md:mb-16">
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-foreground">
-            Podcast
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight text-foreground">
+            A few of our thoughts
           </h2>
           <div className="flex items-center gap-3">
             <button
@@ -186,63 +296,26 @@ const LatestNews = () => {
 
       <div
         ref={scrollerRef}
-        className="flex gap-6 md:gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory pl-6 lg:pl-12 pr-6 lg:pr-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        onMouseEnter={() => {
+          pauseAutoRef.current = true;
+        }}
+        onMouseLeave={() => {
+          pauseAutoRef.current = false;
+        }}
+        className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden pl-6 pr-6 [scrollbar-width:none] [-ms-overflow-style:none] lg:pl-12 lg:pr-12 [&::-webkit-scrollbar]:hidden"
       >
-        {articles.map((article) => (
-          <Link
-            to="/blog"
-            key={article.ep}
-            className="group shrink-0 w-[78vw] sm:w-[420px] md:w-[440px] snap-start"
-          >
-            {/* Artwork tile */}
-            <div className="relative w-full aspect-square overflow-hidden">
-              {/* Top cream band with EP number + eyes */}
-              <div className="absolute top-0 left-0 right-0 h-[18%] bg-[#F5F0E6] z-10 flex items-center justify-between px-6">
-                <span
-                  className="text-sm md:text-base tracking-tight"
-                  style={{ color: "#0D0D0D" }}
-                >
-                  EP — {article.ep.replace("EP", "")}
-                </span>
-                <div className="flex items-center gap-1">
-                  <span className="block w-3 h-3 rounded-full border-[2px] border-[#0D0D0D]" />
-                  <span className="block w-3 h-3 rounded-full border-[2px] border-[#0D0D0D]" />
-                </div>
-              </div>
-
-              {/* Artwork body */}
-              <div
-                className="absolute inset-0 pt-[18%]"
-                style={{ backgroundColor: article.artwork.bg }}
-              >
-                <div className="relative w-full h-full">
-                  <Shape artwork={article.artwork} />
-                  <div
-                    className="absolute top-6 left-6 text-3xl md:text-5xl font-medium leading-[0.95] whitespace-pre-line tracking-tight"
-                    style={{ color: article.artwork.fg }}
-                  >
-                    {article.artwork.title}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Episode pill */}
-            <div className="mt-6">
-              <span className="inline-block text-xs tracking-wide px-4 py-1.5 rounded-full border border-foreground/40 text-foreground">
-                {article.ep}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h3 className="mt-5 text-xl md:text-2xl font-light tracking-tight leading-snug text-foreground group-hover:underline underline-offset-4">
-              {article.title}
-            </h3>
-
-            {/* Date */}
-            <p className="mt-4 text-sm text-muted-foreground">{article.date}</p>
-          </Link>
-        ))}
+        {/*
+          Critical: `min-w-0` + non-flex scroller so this box stays viewport-wide.
+          If the row is the flex container itself, it grows with content and never scrolls.
+        */}
+        <div className="inline-flex items-start gap-6 md:gap-8">
+          <div className="flex shrink-0 items-start gap-6 md:gap-8">
+            {articles.map((article) => articleCard(article, "a"))}
+          </div>
+          <div className="flex shrink-0 items-start gap-6 md:gap-8">
+            {articles.map((article) => articleCard(article, "b"))}
+          </div>
+        </div>
       </div>
     </section>
   );

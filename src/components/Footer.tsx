@@ -1,55 +1,29 @@
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const Footer = () => {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+  const lightOnBackdrop = isHome || location.pathname === "/contact" || location.pathname === "/services";
+
   return (
-    <footer className="section-dark">
-      <div className="container mx-auto px-6 lg:px-12 pt-24 md:pt-32 pb-10">
-        {/* Massive wordmark */}
-        <h2
-          aria-label="Pendolo"
-          className="font-light tracking-[-0.04em] leading-[0.85] text-white text-[28vw] md:text-[24vw] lg:text-[22vw]"
-        >
-          Pendolo
-        </h2>
-
-        {/* Bottom info row */}
-        <div className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-sm text-white/70">
-          <div className="space-y-1">
-            <p>Based UK · Italy</p>
-            <p className="text-white/50">Operating internationally</p>
-          </div>
-
-          <div className="space-y-1">
-            <a
-              href="mailto:hello@pendolo.studio"
-              className="block hover:text-white transition-colors"
-            >
-              hello@pendolo.studio
-            </a>
-            <p className="text-white/50">(+44) 20 4538 1100</p>
-          </div>
-
-          <div className="space-y-1">
-            {["About", "Services", "Work", "Process"].map((page) => (
-              <Link
-                key={page}
-                to={`/${page.toLowerCase()}`}
-                className="block hover:text-white transition-colors"
-              >
-                {page}
-              </Link>
-            ))}
-          </div>
-
-          <div className="space-y-1 md:text-right">
-            <Link to="/contact" className="block hover:text-white transition-colors">
-              Contact
-            </Link>
-            <p className="text-white/50">
-              © {new Date().getFullYear()} Pendolo
-            </p>
-          </div>
+    <footer
+      data-pendolo-footer
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-40 bg-transparent px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 md:px-4 md:pb-[calc(0.875rem+env(safe-area-inset-bottom))] md:pt-3.5 lg:px-5",
+        lightOnBackdrop ? "text-[#fef7ee]" : "text-[#0d0d0d]",
+      )}
+    >
+      <div className="grid grid-cols-2 gap-y-2 text-[8px] uppercase leading-[1.6] tracking-[0.06em] md:grid-cols-3 md:text-[10px]">
+        <div>
+          <p>Based in UK</p>
         </div>
+        <div className="md:text-center">
+          <a href="mailto:hello@pendolo.studio" className="block text-inherit transition-opacity hover:opacity-80">
+            hello@pendolo.studio
+          </a>
+        </div>
+        <div className="col-span-2 text-right md:col-span-1">© {new Date().getFullYear()} Pendolo</div>
       </div>
     </footer>
   );

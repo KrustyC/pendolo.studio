@@ -1,5 +1,12 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
+
+/** Same palette order as `ServicesPreview` — cycles for four steps */
+const STEP_THEMES = [
+  { bg: "#9484D2", fg: "#0D0D0D" },
+  { bg: "#43CCBC", fg: "#0D0D0D" },
+  { bg: "#0D0D0D", fg: "#FFFFFF" },
+  { bg: "#9484D2", fg: "#0D0D0D" },
+] as const;
 
 const steps = [
   {
@@ -36,94 +43,82 @@ const ProcessPreview = () => {
   const [active, setActive] = useState(0);
 
   return (
-    <section className="py-32 md:py-44 border-t border-border">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="mb-20">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-            PROCESS
-          </p>
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight">
-            How we work
-          </h2>
-        </div>
+    <section className="border-t border-border">
+      <div className="container mx-auto px-6 lg:px-12 py-32 md:py-44">
+        <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight">How we work</h2>
+      </div>
 
-        {/* Horizontal accordion — collapses to the left */}
-        <div className="flex w-full h-[420px] md:h-[480px] border-t border-b border-border overflow-hidden">
-          {steps.map((step, index) => {
-            const isActive = index === active;
-            return (
-              <button
-                key={step.number}
-                onClick={() => setActive(index)}
-                onMouseEnter={() => setActive(index)}
-                aria-expanded={isActive}
-                className={`group relative h-full text-left border-l border-border first:border-l-0 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
-                  isActive
-                    ? "flex-grow-[8] bg-background"
-                    : "flex-grow-[1] bg-secondary/40 hover:bg-secondary"
+      {/* Full-viewport horizontal bands — colours match “What we do” */}
+      <div className="relative w-full min-h-[100svh] h-[100svh] flex overflow-hidden border-t border-black/10">
+        {steps.map((step, index) => {
+          const isActive = index === active;
+          const theme = STEP_THEMES[index % STEP_THEMES.length];
+          const isDark = theme.bg === "#0D0D0D";
+          const divider = isDark ? "border-l border-white/15" : "border-l border-black/10";
+
+          return (
+            <button
+              key={step.number}
+              type="button"
+              onClick={() => setActive(index)}
+              onMouseEnter={() => setActive(index)}
+              aria-expanded={isActive}
+              className={`group relative h-full min-h-0 text-left ${divider} first:border-l-0 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
+                isActive ? "flex-grow-[8]" : "flex-grow-[1] hover:brightness-[1.03]"
+              }`}
+              style={{
+                flexBasis: 0,
+                backgroundColor: theme.bg,
+                color: theme.fg,
+              }}
+            >
+              {/* Collapsed rail — top-aligned */}
+              <div
+                className={`absolute inset-y-0 left-0 w-14 sm:w-16 md:w-20 flex flex-col items-center justify-start gap-10 pt-8 md:pt-10 pb-8 transition-opacity duration-300 ${
+                  isActive ? "opacity-100" : "opacity-100"
                 }`}
-                style={{ flexBasis: 0 }}
               >
-                {/* Collapsed view — vertical label on the left edge */}
-                <div
-                  className={`absolute inset-y-0 left-0 w-16 md:w-20 flex flex-col items-center justify-between py-8 transition-opacity duration-300 ${
-                    isActive ? "opacity-100" : "opacity-100"
-                  }`}
+                <span className="text-xs tracking-[0.3em]" style={{ color: theme.fg }}>
+                  {step.number}
+                </span>
+                <span
+                  className="text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase whitespace-nowrap transition-opacity opacity-100"
+                  style={{
+                    color: theme.fg,
+                    writingMode: "vertical-rl",
+                    transform: "rotate(180deg)",
+                  }}
                 >
-                  <span className="text-xs tracking-[0.3em] text-muted-foreground">
-                    {step.number}
-                  </span>
-                  <span
-                    className={`text-xs md:text-sm tracking-[0.25em] uppercase whitespace-nowrap transition-colors ${
-                      isActive ? "text-foreground" : "text-foreground/70"
-                    }`}
-                    style={{
-                      writingMode: "vertical-rl",
-                      transform: "rotate(180deg)",
-                    }}
-                  >
-                    {step.title}
-                  </span>
-                  <span className="w-px h-8 bg-border" aria-hidden />
-                </div>
+                  {step.title}
+                </span>
+              </div>
 
-                {/* Expanded content */}
-                <div
-                  className={`h-full pl-20 md:pl-28 pr-8 md:pr-16 py-10 md:py-14 flex flex-col justify-between transition-opacity duration-500 ${
-                    isActive
-                      ? "opacity-100 delay-200"
-                      : "opacity-0 pointer-events-none"
-                  }`}
-                >
-                  <div className="max-w-xl">
-                    <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-                      Step {step.number}
-                    </p>
-                    <h3 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight mb-6">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                      {step.detail}
-                    </p>
-                  </div>
-                  <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
-                    {step.description}
+              {/* Expanded panel — top-aligned copy */}
+              <div
+                className={`h-full min-h-0 pl-14 sm:pl-16 md:pl-24 pr-6 sm:pr-10 md:pr-14 pt-8 md:pt-10 pb-10 flex flex-col justify-start gap-8 md:gap-10 transition-opacity duration-500 ${
+                  isActive ? "opacity-100 delay-200" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <div className="max-w-xl">
+                  <p className="text-xs tracking-[0.3em] uppercase mb-5" style={{ color: theme.fg }}>
+                    Step {step.number}
+                  </p>
+                  <h3 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight mb-5" style={{ color: theme.fg }}>
+                    {step.title}
+                  </h3>
+                  <p className="text-sm md:text-base leading-relaxed" style={{ color: theme.fg }}>
+                    {step.detail}
                   </p>
                 </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-16">
-          <Link
-            to="/process"
-            className="link-underline text-sm tracking-wide text-foreground/80 hover:text-foreground transition-opacity"
-          >
-            Learn more about our process and pricing
-          </Link>
-        </div>
+                <p className="text-xs tracking-[0.2em] uppercase max-w-xl" style={{ color: theme.fg }}>
+                  {step.description}
+                </p>
+              </div>
+            </button>
+          );
+        })}
       </div>
+
     </section>
   );
 };

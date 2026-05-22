@@ -1,5 +1,8 @@
 import type { Config } from "tailwindcss";
 
+/** Matches `body` / headings in `src/index.css` — single family site-wide except homepage hero accents. */
+const interStack = ['"Inter"', '"Helvetica Neue"', "Helvetica", "Arial", "sans-serif"] as const;
+
 export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
@@ -14,9 +17,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Syne", "sans-serif"],
-        body: ["Space Grotesk", "sans-serif"],
-        serif: ["Instrument Serif", "serif"],
+        sans: [...interStack],
+        display: [...interStack],
+        body: [...interStack],
+        serif: [...interStack],
+        /** Condensed slab — Rokkitt */
+        slab: ['"Rokkitt"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,28 +1,26 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import brandCircle from "../../brand.svg";
+import webDesignCircle from "../../web design.svg";
+import webDevCircle from "../../web dev.svg";
 
 const Contact = () => {
   const { toast } = useToast();
+  const inputBaseClass =
+    "bg-transparent border-0 outline-none text-white placeholder:text-white/50 placeholder:font-sans font-rock-salt leading-none h-[1.1em] pb-0 flex-shrink transition-colors";
+  const chipBaseClass =
+    "group relative inline-flex items-center justify-center bg-transparent px-2 py-1 text-white transition-colors duration-150";
+  const chipTextClass = "relative z-10 font-light tracking-tight leading-[1.05] transition-[font-weight] duration-150";
+  const chipCircleClass = "pointer-events-none absolute -inset-x-2 -inset-y-1 h-[calc(100%+0.5rem)] w-[calc(100%+1rem)] max-w-none";
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     company: "",
-    service: "",
+    service: [] as string[],
     industry: "",
     budget: "",
     description: "",
   });
-  const [showNote, setShowNote] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,21 +28,18 @@ const Contact = () => {
       title: "Message sent",
       description: "Thank you. We'll be in touch within two working days.",
     });
-    setFormData({ name: "", email: "", company: "", service: "", industry: "", budget: "", description: "" });
-    setShowNote(false);
+    setFormData({ name: "", email: "", company: "", service: [], industry: "", budget: "", description: "" });
   };
 
   return (
-    <main className="pt-32 md:pt-44 pb-32">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="max-w-3xl animate-fade-up">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-8">CONTACT</p>
-
-          <form onSubmit={handleSubmit} className="space-y-12">
+    <main className="section-dark min-h-svh flex items-center py-20 md:py-24">
+      <div className="container mx-auto w-full px-3 md:px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto animate-fade-up">
+          <form onSubmit={handleSubmit} className="mx-auto w-fit max-w-full space-y-4">
             {/* Conversational form layout inspired by reference */}
-            <div className="space-y-10">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
-                <span>Hello, my name is</span>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-2xl md:text-3xl font-light tracking-tight leading-[1.05] text-white">
+                <span className="inline-block w-[13.5rem] md:w-[16rem] text-right">Hello, my name is</span>
                 <input
                   type="text"
                   value={formData.name}
@@ -52,12 +47,12 @@ const Contact = () => {
                   required
                   maxLength={100}
                   placeholder="Your Name"
-                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[160px] flex-shrink transition-colors"
+                  className={`${inputBaseClass} min-w-[160px] ${formData.name ? "text-[#F25C3D]" : ""}`}
                 />
               </div>
 
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
-                <span>and my email is</span>
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-2xl md:text-3xl font-light tracking-tight leading-[1.05] text-white">
+                <span className="inline-block w-[13.5rem] md:w-[16rem] text-right">and my email is</span>
                 <input
                   type="email"
                   value={formData.email}
@@ -65,127 +60,122 @@ const Contact = () => {
                   required
                   maxLength={255}
                   placeholder="Email Address"
-                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[200px] flex-shrink transition-colors"
+                  className={`${inputBaseClass} min-w-[200px] ${formData.email ? "text-[#F25C3D]" : ""}`}
                 />
               </div>
 
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
-                <span>I represent</span>
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-2xl md:text-3xl font-light tracking-tight leading-[1.05] text-white">
+                <span className="inline-block w-[13.5rem] md:w-[16rem] text-right">I represent</span>
                 <input
                   type="text"
                   value={formData.company}
                   onChange={(e) => setFormData((p) => ({ ...p, company: e.target.value }))}
                   maxLength={100}
                   placeholder="Company"
-                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[140px] flex-shrink transition-colors"
+                  className={`${inputBaseClass} min-w-[140px] ${formData.company ? "text-[#F25C3D]" : ""}`}
                 />
                 <span>.</span>
               </div>
 
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
-                <span>We are looking for</span>
-                <div className="inline-block min-w-[180px]">
-                  <Select onValueChange={(v) => setFormData((p) => ({ ...p, service: v }))}>
-                    <SelectTrigger className="bg-transparent border-0 border-b border-foreground/20 rounded-none text-2xl md:text-3xl font-light h-auto p-0 pb-1 focus:ring-0 focus:border-foreground/60 [&>svg]:text-muted-foreground">
-                      <SelectValue placeholder="Select service" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="brand">Brand Design</SelectItem>
-                      <SelectItem value="web-design">Web Design</SelectItem>
-                      <SelectItem value="web-dev">Web Development</SelectItem>
-                      <SelectItem value="full">Full Package</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-2xl md:text-3xl font-light tracking-tight leading-[1.05] text-white">
+                <span className="inline-block w-[13.5rem] md:w-[16rem] text-right">We are looking for</span>
+                <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                  {[
+                    { label: "Brand Design", value: "brand", circle: brandCircle },
+                    { label: "Web Design", value: "web-design", circle: webDesignCircle },
+                    { label: "Web Development", value: "web-dev", circle: webDevCircle },
+                  ].map((service) => (
+                    <button
+                      key={service.value}
+                      type="button"
+                      onClick={() =>
+                        setFormData((p) => ({
+                          ...p,
+                          service: p.service.includes(service.value)
+                            ? p.service.filter((v) => v !== service.value)
+                            : [...p.service, service.value],
+                        }))
+                      }
+                      className={chipBaseClass}
+                      aria-pressed={formData.service.includes(service.value)}
+                    >
+                      {formData.service.includes(service.value) ? (
+                        <img
+                          src={service.circle}
+                          alt=""
+                          aria-hidden="true"
+                          className={chipCircleClass}
+                        />
+                      ) : null}
+                      <span className="relative z-10 grid">
+                        <span aria-hidden="true" className="invisible col-start-1 row-start-1 font-semibold tracking-tight leading-[1.05]">
+                          {service.label}
+                        </span>
+                        <span
+                          className={`${chipTextClass} col-start-1 row-start-1 ${
+                            formData.service.includes(service.value) ? "font-semibold" : "group-hover:font-semibold"
+                          }`}
+                        >
+                          {service.label}
+                        </span>
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-4 text-2xl md:text-3xl font-light tracking-tight">
-                <span>within the</span>
-                <input
-                  type="text"
-                  value={formData.industry}
-                  onChange={(e) => setFormData((p) => ({ ...p, industry: e.target.value }))}
-                  maxLength={100}
-                  placeholder="Industry"
-                  className="bg-transparent border-b border-foreground/20 focus:border-foreground/60 outline-none text-foreground placeholder:text-muted-foreground/40 pb-1 min-w-[120px] flex-shrink transition-colors"
-                />
-                <span>sector.</span>
-              </div>
             </div>
 
             {/* Budget */}
-            <div>
-              <p className="text-2xl md:text-3xl font-light tracking-tight mb-8">Our budget is around</p>
-              <div className="space-y-4">
-                <Select onValueChange={(v) => setFormData((p) => ({ ...p, budget: v }))}>
-                  <SelectTrigger className="bg-transparent border border-border rounded-none text-sm tracking-wide h-12 focus:ring-0 focus:border-foreground/40 max-w-sm">
-                    <SelectValue placeholder="Select a range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="<5k">Under £5,000</SelectItem>
-                    <SelectItem value="5-10k">£5,000 – £10,000</SelectItem>
-                    <SelectItem value="10-25k">£10,000 – £25,000</SelectItem>
-                    <SelectItem value="25k+">£25,000+</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-2xl md:text-3xl font-light tracking-tight leading-[1.05] text-white">
+              <span className="inline-block w-[13.5rem] md:w-[16rem] text-right whitespace-nowrap">Our budget is around</span>
+              <div className="flex min-w-[16rem] flex-1 flex-wrap items-center gap-3">
+                {[
+                  { label: "Under £5,000", value: "<5k", circle: brandCircle },
+                  { label: "£5,000 - £10,000", value: "5-10k", circle: webDesignCircle },
+                  { label: "£10,000+", value: "10k+", circle: webDevCircle },
+                ].map((range) => (
+                  <button
+                    key={range.value}
+                    type="button"
+                    onClick={() => setFormData((p) => ({ ...p, budget: range.value }))}
+                    className={chipBaseClass}
+                    aria-pressed={formData.budget === range.value}
+                  >
+                    {formData.budget === range.value ? (
+                      <img src={range.circle} alt="" aria-hidden="true" className={chipCircleClass} />
+                    ) : null}
+                    <span className="relative z-10 grid">
+                      <span aria-hidden="true" className="invisible col-start-1 row-start-1 font-semibold tracking-tight leading-[1.05]">
+                        {range.label}
+                      </span>
+                      <span
+                        className={`${chipTextClass} col-start-1 row-start-1 ${
+                          formData.budget === range.value ? "font-semibold" : "group-hover:font-semibold"
+                        }`}
+                      >
+                        {range.label}
+                      </span>
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Add a note toggle */}
-            {!showNote ? (
-              <button
-                type="button"
-                onClick={() => setShowNote(true)}
-                className="text-xs tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground transition-opacity"
-              >
-                + Add a note
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-12">
+              <button type="submit" className="cta-submit">
+                Send an enquiry
               </button>
-            ) : (
-              <div className="space-y-3">
-                <Label htmlFor="description" className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
-                  Project notes
-                </Label>
-                <Textarea
-                  id="description"
-                  rows={5}
-                  value={formData.description}
-                  onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
-                  maxLength={2000}
-                  placeholder="Tell us about your project, goals, and timeline."
-                  className="bg-transparent border border-border rounded-none resize-none focus:border-foreground/40 focus-visible:ring-0"
-                />
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="bg-foreground text-background px-10 py-4 text-xs tracking-[0.2em] uppercase hover:bg-foreground/90 transition-colors"
-            >
-              Send inquiry
-            </button>
+              <a
+                href="mailto:hello@pendolo.studio"
+                className="text-sm text-white underline underline-offset-4 hover:text-white transition-colors"
+              >
+                or send us an email
+              </a>
+            </div>
           </form>
         </div>
 
-        {/* Side info */}
-        <div className="mt-28 pt-16 border-t border-border grid md:grid-cols-3 gap-12">
-          <div>
-            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">Email</p>
-            <a
-              href="mailto:hello@pendolo.studio"
-              className="text-sm text-foreground/70 hover:text-foreground transition-opacity"
-            >
-              hello@pendolo.studio
-            </a>
-          </div>
-          <div>
-            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">Based in</p>
-            <p className="text-sm text-muted-foreground">United Kingdom · Italy</p>
-          </div>
-          <div>
-            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">Languages</p>
-            <p className="text-sm text-muted-foreground">English · Italian · Spanish</p>
-          </div>
-        </div>
       </div>
     </main>
   );
