@@ -25,6 +25,8 @@ export const Navbar = () => {
           <img
             src="/black_logo.svg"
             alt="Pendolo"
+            width={307}
+            height={90}
             className={classNames(
               "h-auto shrink-0",
               {
