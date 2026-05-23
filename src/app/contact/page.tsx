@@ -1,6 +1,19 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 
 import { ContactForm } from "./_components/ContactForm";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Start a project with Pendolo Studio. Get in touch for branding, web design, and development enquiries.",
+  alternates: {
+    canonical: "https://www.pendolo.studio/contact",
+  },
+  openGraph: {
+    url: "https://www.pendolo.studio/contact",
+  },
+};
 
 export default function ContactPage() {
   return (
