@@ -10,8 +10,7 @@ export const PENDULUM_ROD_LENGTH = 3.62;
 export const PENDULUM_BOB_RADIUS = 0.36;
 
 /** Pivot to bob center — used by physics and shadow placement */
-export const PENDULUM_ARM =
-  PENDULUM_ROD_LENGTH + PENDULUM_BOB_RADIUS * 0.85;
+export const PENDULUM_ARM = PENDULUM_ROD_LENGTH + PENDULUM_BOB_RADIUS * 0.85;
 
 export type PendulumSim = {
   theta: number;
@@ -30,7 +29,10 @@ type StepArgs = {
 };
 
 /** Gravity pendulum + damping + slow periodic drive + soft mouse bias + impulse */
-export function stepPendulum(sim: PendulumSim, { dt, mouseSmoothedNdcX, mouseImpulse }: StepArgs): void {
+export function stepPendulum(
+  sim: PendulumSim,
+  { dt, mouseSmoothedNdcX, mouseImpulse }: StepArgs
+): void {
   const dtClamped = Math.min(Math.max(dt, 0), 1 / 30);
 
   const g = 9.82;

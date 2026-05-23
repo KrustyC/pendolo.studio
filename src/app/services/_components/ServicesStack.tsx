@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { MotionValue } from "framer-motion";
 import {
   motion,
   useReducedMotion,
@@ -8,7 +9,6 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import type { MotionValue } from "framer-motion";
 
 type Service = {
   title: string;
@@ -139,7 +139,11 @@ function SkillChip({ label, idx, reveal }: SkillChipProps) {
   const y = useTransform(chipProgress, [0, 1], [-120, 0]);
   const x = useTransform(chipProgress, [0, 1], [pos.rotate * 2, 0]);
   const opacity = useTransform(chipProgress, [0, 0.25, 1], [0, 1, 1]);
-  const rotate = useTransform(chipProgress, [0, 1], [pos.rotate - 14, pos.rotate]);
+  const rotate = useTransform(
+    chipProgress,
+    [0, 1],
+    [pos.rotate - 14, pos.rotate]
+  );
   const scale = useTransform(chipProgress, [0, 1], [0.88, 1]);
 
   return (
@@ -185,7 +189,11 @@ type DisciplineRowProps = {
 };
 
 function DisciplineRow({ service, reveal }: DisciplineRowProps) {
-  const titleColor = useTransform(reveal, [0, 0.35, 1], [INACTIVE, ACTIVE, ACTIVE]);
+  const titleColor = useTransform(
+    reveal,
+    [0, 0.35, 1],
+    [INACTIVE, ACTIVE, ACTIVE]
+  );
   const contentHeight = useTransform(reveal, [0, 1], ["0vh", "38vh"]);
   const contentOpacity = useTransform(reveal, [0, 0.3, 1], [0, 0, 1]);
   const contentY = useTransform(reveal, [0, 1], [12, 0]);
@@ -198,13 +206,19 @@ function DisciplineRow({ service, reveal }: DisciplineRowProps) {
       >
         {service.title}
       </motion.h2>
-      <motion.div className="overflow-hidden" style={{ height: contentHeight }} aria-hidden="true">
+      <motion.div
+        className="overflow-hidden"
+        style={{ height: contentHeight }}
+        aria-hidden="true"
+      >
         <motion.div
           className="grid grid-cols-1 gap-6 pt-5 md:grid-cols-12 md:gap-10 md:pt-6"
           style={{ opacity: contentOpacity, y: contentY }}
         >
           <div className="md:col-span-6">
-            <p className="max-w-md text-sm leading-relaxed md:text-base">{service.description}</p>
+            <p className="max-w-md text-sm leading-relaxed md:text-base">
+              {service.description}
+            </p>
           </div>
           <div className="relative h-[28vh] md:col-span-6 md:h-[30vh]">
             <AnimatedChipCluster items={service.items} reveal={reveal} />
@@ -218,7 +232,9 @@ function DisciplineRow({ service, reveal }: DisciplineRowProps) {
 const ServicesStackStatic = () => (
   <section className="bg-white text-black">
     <div className="container mx-auto px-6 py-20 md:px-10 md:py-24 lg:px-14">
-      <p className="font-typewriter text-xs font-medium uppercase tracking-[0.12em]">What we do</p>
+      <p className="font-typewriter text-xs font-medium uppercase tracking-[0.12em]">
+        What we do
+      </p>
       <div className="mt-10 space-y-12">
         {services.map((service) => (
           <div key={service.title}>
@@ -240,7 +256,12 @@ const ServicesStackStatic = () => (
   </section>
 );
 
-const SCROLL_SPRING = { stiffness: 80, damping: 26, mass: 0.42, restDelta: 0.0008 };
+const SCROLL_SPRING = {
+  stiffness: 80,
+  damping: 26,
+  mass: 0.42,
+  restDelta: 0.0008,
+};
 
 const ServicesStackInteractive = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -273,7 +294,11 @@ const ServicesStackInteractive = () => {
   const reveals = [reveal0, reveal1, reveal2];
 
   return (
-    <section ref={containerRef} className="relative bg-white text-black" style={{ height: "420vh" }}>
+    <section
+      ref={containerRef}
+      className="relative bg-white text-black"
+      style={{ height: "420vh" }}
+    >
       <div className="sticky top-0 flex h-svh w-full items-center overflow-hidden">
         <div className="container mx-auto w-full px-6 md:px-10 lg:px-14">
           <p className="font-typewriter text-xs font-medium uppercase tracking-[0.12em] text-[#0D0D0D]">
@@ -281,7 +306,11 @@ const ServicesStackInteractive = () => {
           </p>
           <div className="mt-6 md:mt-8">
             {services.map((service, i) => (
-              <DisciplineRow key={service.title} service={service} reveal={reveals[i]} />
+              <DisciplineRow
+                key={service.title}
+                service={service}
+                reveal={reveals[i]}
+              />
             ))}
           </div>
         </div>
@@ -290,9 +319,21 @@ const ServicesStackInteractive = () => {
   );
 };
 
-const ServicesStack = () => {
+export const ServicesStack = () => {
   const reduceMotion = useReducedMotion();
-  return reduceMotion ? <ServicesStackStatic /> : <ServicesStackInteractive />;
-};
+  const [isNarrow, setIsNarrow] = useState(false);
 
-export default ServicesStack;
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    setIsNarrow(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsNarrow(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  return reduceMotion || isNarrow ? (
+    <ServicesStackStatic />
+  ) : (
+    <ServicesStackInteractive />
+  );
+};

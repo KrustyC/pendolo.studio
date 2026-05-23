@@ -1,152 +1,108 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rokkitt:wght@500;600;700&display=swap");
+@import "tailwindcss";
 
-@font-face {
-  font-family: "Rock Salt";
-  src: url("/RockSalt-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
-
-    --card: 0 0% 96%;
-    --card-foreground: 0 0% 7%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
-
-    --primary: 0 0% 7%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 7%;
-
-    --muted: 0 0% 95%;
-    --muted-foreground: 0 0% 7%;
-
-    --accent: 25 82% 55%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 7%;
-
-    --radius: 0rem;
-  }
+@theme inline {
+  --font-sans: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-typewriter: var(--font-mono), ui-monospace, monospace;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground;
     font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 300;
     letter-spacing: -0.02em;
   }
 }
 
 @layer components {
-  .font-typewriter {
-    font-family: "IBM Plex Mono", "Space Mono", "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-
   nav,
   footer {
-    font-family: "IBM Plex Mono", "Space Mono", "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-mono), ui-monospace, monospace;
   }
 
-  .text-muted-foreground {
-    font-family: "IBM Plex Mono", "Space Mono", "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: 0.02em;
-  }
-}
-
-@layer utilities {
-  .font-slab-heading {
-    font-family: "Alfa Slab One", "Rokkitt", ui-serif, Georgia, serif !important;
-    letter-spacing: 0.01em !important;
+  .font-typewriter {
+    font-family: var(--font-mono), ui-monospace, monospace;
   }
 
-  .font-display {
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
-
-  .font-body {
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
-
-  .font-rock-salt {
-    font-family: "Rock Salt", "Comic Sans MS", "Marker Felt", cursive;
-  }
-
-  .font-editorial {
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-weight: 200;
-  }
-
-  .text-balance {
-    text-wrap: balance;
+  .section-dark {
+    background-color: #0d0d0d;
+    color: hsl(0 0% 100%);
   }
 
   .cta-marketing {
     @apply inline-flex items-center justify-center gap-2 rounded-full border-0 bg-white px-4 py-2 font-sans text-xs font-semibold uppercase text-neutral-950 shadow-none transition-colors;
     @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
   }
-  .cta-nav {
-    @apply inline-flex items-center justify-center rounded-full border-0 bg-white px-3.5 py-1.5 font-sans text-[10px] font-semibold text-neutral-950 uppercase shadow-none transition-colors;
-    @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
-  }
-  .cta-chip {
-    @apply inline-flex items-center justify-center rounded-full border-0 bg-white px-3 py-1.5 font-sans text-[10px] font-semibold uppercase text-neutral-950 shadow-none transition-colors;
-    @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
-  }
+
   .cta-submit {
     @apply inline-flex items-center justify-center rounded-full border-0 bg-white px-5 py-2 font-sans text-xs font-semibold uppercase text-neutral-950 shadow-none transition-colors;
     @apply hover:bg-neutral-100 hover:text-neutral-950 hover:underline underline-offset-4 decoration-[1.5px];
   }
+}
 
-  .section-dark {
-    background-color: #0D0D0D;
-    color: hsl(0 0% 100%);
-    --foreground: 0 0% 100%;
-    --muted-foreground: 0 0% 100%;
-    --card-foreground: 0 0% 100%;
-    --popover-foreground: 0 0% 100%;
-  }
+:root {
+  /* Semantic colors */
+  --background: hsl(42, 40%, 95%);
+  --foreground: hsl(25, 20%, 14%);
 
-  .section-accent {
-    background-color: hsl(25 82% 55%);
-    color: hsl(0 0% 100%);
-    --foreground: 0 0% 100%;
-    --muted-foreground: 0 0% 100%;
-    --card-foreground: 0 0% 100%;
-    --popover-foreground: 0 0% 100%;
-  }
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --gray-60: #f7f6f6;
+
+  --primary: #222f3f;
+  --accent: #fed9a5;
+  --accent-dark: #dda558;
+
+  --card: hsl(42, 35%, 91%);
+  --card-foreground: hsl(25, 20%, 14%);
+
+  --primary: hsl(220, 55%, 35%);
+  --primary-foreground: hsl(42, 40%, 95%);
+
+  --secondary: hsl(42, 30%, 88%);
+  --secondary-foreground: hsl(25, 20%, 14%);
+
+  --muted: hsl(40, 22%, 89%);
+  --muted-foreground: hsl(25, 10%, 45%);
+
+  --accent: hsl(4, 68%, 50%);
+  --accent-foreground: hsl(42, 40%, 95%);
+
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+
+  --border: hsl(38, 22%, 82%);
+  --input: hsl(38, 22%, 82%);
+  --ring: hsl(220, 55%, 35%);
+
+  --radius: 1rem;
+
+  /* Brand palette */
+  --blue: hsl(220, 55%, 35%);
+  --blue-light: hsl(218, 45%, 48%);
+  --coral: hsl(4, 68%, 50%);
+  --coral-light: hsl(6, 55%, 65%);
+  --mustard: hsl(42, 88%, 52%);
+  --mustard-dark: hsl(40, 80%, 42%);
+  --cream: hsl(42, 40%, 95%);
+  --cream-dark: hsl(42, 30%, 88%);
+  --forest: hsl(145, 35%, 30%);
+  --charcoal: hsl(25, 20%, 14%);
 }
 
 @keyframes pendulum-swing {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-20deg);
   }
   50% {
@@ -256,12 +212,29 @@
 }
 
 .services-hero-glow-flash {
-  animation: services-hero-glow-flash 3.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: services-hero-glow-flash 3.2s cubic-bezier(0.22, 1, 0.36, 1)
+    forwards;
 }
 
 .services-hero-letter-flash {
   opacity: 0;
-  animation: services-hero-letter-flash 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: services-hero-letter-flash 0.75s cubic-bezier(0.22, 1, 0.36, 1)
+    forwards;
+}
+
+@keyframes selection-circle-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.selection-circle-mask {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: selection-circle-draw 0.65s cubic-bezier(0.33, 1, 0.38, 1) forwards;
 }
 
 .link-underline {
@@ -270,7 +243,7 @@
 }
 
 .link-underline::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;

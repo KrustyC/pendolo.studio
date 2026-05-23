@@ -27,7 +27,8 @@ export function useHeroPendulumMouse(): HeroPendulumMouseApi {
       const w = window.innerWidth || 1;
       targetNdcX.current = (e.clientX / w) * 2 - 1;
       if (lastClientX.current != null) {
-        impulseBank.current += (e.clientX - lastClientX.current) * IMPULSE_PER_PX;
+        impulseBank.current +=
+          (e.clientX - lastClientX.current) * IMPULSE_PER_PX;
       }
       lastClientX.current = e.clientX;
     };

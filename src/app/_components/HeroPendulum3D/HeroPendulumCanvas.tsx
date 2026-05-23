@@ -1,10 +1,12 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef, type MutableRefObject } from "react";
+import { type MutableRefObject, useLayoutEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
+import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
+
+import { FloatingChromeSpawns } from "./FloatingChromeSpawns/FloatingChromeSpawns";
 import {
   createPendulumSim,
   HERO_PENDULUM_BG,
@@ -12,11 +14,13 @@ import {
   PENDULUM_BOB_RADIUS,
   PENDULUM_PIVOT,
   PENDULUM_ROD_LENGTH,
-  stepPendulum,
   type PendulumSim,
+  stepPendulum,
 } from "./pendulumMotion";
-import { FloatingChromeSpawns } from "./FloatingChromeSpawns";
-import { useHeroPendulumMouse, type HeroPendulumMouseApi } from "./useHeroPendulumMouse";
+import {
+  type HeroPendulumMouseApi,
+  useHeroPendulumMouse,
+} from "./useHeroPendulumMouse";
 
 const BG = new THREE.Color(HERO_PENDULUM_BG);
 
@@ -64,7 +68,7 @@ function HdrEnvironment({
   const { gl, scene } = useThree();
 
   useLayoutEffect(() => {
-    const loader = new RGBELoader();
+    const loader = new HDRLoader();
     let cancelled = false;
     let renderTarget: THREE.WebGLRenderTarget | null = null;
     const prevIntensity = scene.environmentIntensity;
@@ -89,7 +93,7 @@ function HdrEnvironment({
         if (process.env.NODE_ENV === "development" && !cancelled) {
           console.warn("[HeroPendulumCanvas] HDRI failed to load:", url);
         }
-      },
+      }
     );
 
     return () => {
@@ -104,7 +108,8 @@ function HdrEnvironment({
 }
 
 const SHADOW_GAP_BELOW_BOB = 0.07;
-const SHADOW_FLOOR_Y = PENDULUM_PIVOT[1] - PENDULUM_ARM - PENDULUM_BOB_RADIUS - SHADOW_GAP_BELOW_BOB;
+const SHADOW_FLOOR_Y =
+  PENDULUM_PIVOT[1] - PENDULUM_ARM - PENDULUM_BOB_RADIUS - SHADOW_GAP_BELOW_BOB;
 
 function FakeSoftShadowPlane({
   simRef,
@@ -141,7 +146,11 @@ function FakeSoftShadowPlane({
 
     const material = meshRef.current.material;
     if (material instanceof THREE.MeshBasicMaterial) {
-      material.opacity = THREE.MathUtils.clamp(0.82 - shadowToBob * 0.22, 0.28, 0.82);
+      material.opacity = THREE.MathUtils.clamp(
+        0.82 - shadowToBob * 0.22,
+        0.28,
+        0.82
+      );
     }
   });
 
@@ -169,7 +178,9 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
   const reduceMotion = useRef(false);
 
   useLayoutEffect(() => {
-    reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reduceMotion.current = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
   }, []);
 
   useFrame((_, delta) => {
@@ -227,9 +238,22 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
       <RectAreaLightInit />
       <color attach="background" args={[BG]} />
       <ambientLight intensity={0.34} />
-      <hemisphereLight color="#f5f5f5" groundColor="#a8a8a6" intensity={0.52} position={[0, 1, 0]} />
-      <directionalLight position={[4.5, 8, 5]} intensity={0.95} color="#ffffff" />
-      <directionalLight position={[-5, 5, 3]} intensity={0.38} color="#f4f6f8" />
+      <hemisphereLight
+        color="#f5f5f5"
+        groundColor="#a8a8a6"
+        intensity={0.52}
+        position={[0, 1, 0]}
+      />
+      <directionalLight
+        position={[4.5, 8, 5]}
+        intensity={0.95}
+        color="#ffffff"
+      />
+      <directionalLight
+        position={[-5, 5, 3]}
+        intensity={0.38}
+        color="#f4f6f8"
+      />
       <rectAreaLight
         width={5}
         height={5}
@@ -247,7 +271,10 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
         rotation={[-0.4, -0.5, 0]}
       />
 
-      <HdrEnvironment url={HERO_PENDULUM_HDRI_URL} environmentIntensity={0.82} />
+      <HdrEnvironment
+        url={HERO_PENDULUM_HDRI_URL}
+        environmentIntensity={0.82}
+      />
 
       <PendulumRig mouse={mouse} />
       <FloatingChromeSpawns />

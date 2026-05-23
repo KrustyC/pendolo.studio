@@ -13,7 +13,9 @@ const headingClass =
 function GlowLine({ children }: { children: ReactNode }) {
   const reduceMotion = useReducedMotion();
   return (
-    <span className={reduceMotion ? "block" : "services-hero-glow-flash block"}>{children}</span>
+    <span className={reduceMotion ? "block" : "services-hero-glow-flash block"}>
+      {children}
+    </span>
   );
 }
 
@@ -30,7 +32,9 @@ function LetterByLetterLine({ text }: { text: string }) {
         <span
           key={`${char}-${i}`}
           className="services-hero-letter-flash inline-block"
-          style={{ animationDelay: `${SECOND_LINE_DELAY_S + i * LETTER_STAGGER_S}s` }}
+          style={{
+            animationDelay: `${SECOND_LINE_DELAY_S + i * LETTER_STAGGER_S}s`,
+          }}
           aria-hidden="true"
         >
           {char === " " ? " " : char}
@@ -40,7 +44,7 @@ function LetterByLetterLine({ text }: { text: string }) {
   );
 }
 
-const ServicesHero = () => {
+export const ServicesHero = () => {
   return (
     <section className="flex min-h-svh w-full items-center justify-center bg-[#0D0D0D] text-white">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-center px-6 py-24 md:px-8 lg:px-12">
@@ -56,5 +60,3 @@ const ServicesHero = () => {
     </section>
   );
 };
-
-export default ServicesHero;

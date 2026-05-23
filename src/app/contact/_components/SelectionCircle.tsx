@@ -1,0 +1,48 @@
+import { useId } from "react";
+
+interface SelectionCircleProps {
+  className?: string;
+}
+
+const viewBox = "0 0 151.4 43.62";
+
+// Compound path from brand.svg — even-odd fill renders a thick hand-drawn ring, not a solid blob.
+const ringPath =
+  "M1.42,30.41c-3.42-3.74-.13-8.39,4.41-11.8.58-2.77,2.51-2.08,6.96-4.42C26.01,7.25,51.7,2.18,66.85.92l5.72-.47c14.11-1.17,28.09,0,42.01,2.73,12.15,2.38,26.51,4.99,34.48,14.91,3.48,4.33,3.12,9.71-1.26,13.41-4.9,4.14-11,6.49-17.41,7.94-10.45,2.37-20.78,3.02-31.5,3.56-15.13.77-29.92.87-45.06.02-14.2-.79-43.68-3.11-52.39-12.62ZM45.08,39.95c23.04,2.14,53.41,1.99,76.41-.65,5.9-.68,11.54-2.01,17.14-3.85,2.71-.89,5.2-2.36,7.31-4.16,3.78-3.23,3.91-8.13.58-11.93-3.94-4.51-9.39-8.08-15.49-9.79s-12.36-2.83-18.68-4.14c-12.95-2.69-29.74-2.37-43.04-.8-18.07,2.14-35.62,5.66-53.28,10.06-4.61,1.15-8.65,4.31-11.53,7.65-2.06,2.39-1.52,5.42.88,7.19,9.36,6.93,27.43,9.28,39.69,10.42ZM26.31,11.05L63.79,3.76c-9.74.54-18.62,2.66-27.84,4.37-3.3,1.08-6.68,1.51-9.64,2.91Z";
+
+const outerContourPath =
+  "M1.42,30.41c-3.42-3.74-.13-8.39,4.41-11.8.58-2.77,2.51-2.08,6.96-4.42C26.01,7.25,51.7,2.18,66.85.92l5.72-.47c14.11-1.17,28.09,0,42.01,2.73,12.15,2.38,26.51,4.99,34.48,14.91,3.48,4.33,3.12,9.71-1.26,13.41-4.9,4.14-11,6.49-17.41,7.94-10.45,2.37-20.78,3.02-31.5,3.56-15.13.77-29.92.87-45.06.02-14.2-.79-43.68-3.11-52.39-12.62Z";
+
+export const SelectionCircle: React.FC<SelectionCircleProps> = ({
+  className,
+}) => {
+  const maskId = useId();
+
+  return (
+    <svg
+      viewBox={viewBox}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      className={className}
+    >
+      <mask id={maskId} maskUnits="userSpaceOnUse">
+        <path
+          d={outerContourPath}
+          fill="none"
+          stroke="#fff"
+          strokeWidth="15"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pathLength={1}
+          className="selection-circle-mask"
+        />
+      </mask>
+      <path
+        d={ringPath}
+        fill="#dd524c"
+        fillRule="evenodd"
+        mask={`url(#${maskId})`}
+      />
+    </svg>
+  );
+};

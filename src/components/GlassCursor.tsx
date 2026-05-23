@@ -33,7 +33,9 @@ export function GlassCursor() {
       setActive(ok);
       document.documentElement.classList.toggle("glass-cursor-on", ok);
       if (ok) {
-        window.addEventListener("pointermove", onPointerMove, { passive: true });
+        window.addEventListener("pointermove", onPointerMove, {
+          passive: true,
+        });
       } else if (raf.current) {
         cancelAnimationFrame(raf.current);
         raf.current = 0;
