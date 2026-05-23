@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -28,11 +28,11 @@ export const FloatingChromeSpawns = () => {
   const camera = useThree((s) => s.camera);
   const gl = useThree((s) => s.gl);
 
-  const raycaster = useMemo(() => new THREE.Raycaster(), []);
-  const drawingPlane = useMemo(() => new THREE.Plane(), []);
-  const cameraForward = useMemo(() => new THREE.Vector3(), []);
-  const tmpHit = useMemo(() => new THREE.Vector3(), []);
-  const tmpNdc = useMemo(() => new THREE.Vector2(), []);
+  const raycaster = useRef(new THREE.Raycaster());
+  const drawingPlane = useRef(new THREE.Plane());
+  const cameraForward = useRef(new THREE.Vector3());
+  const tmpHit = useRef(new THREE.Vector3());
+  const tmpNdc = useRef(new THREE.Vector2());
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -63,17 +63,17 @@ export const FloatingChromeSpawns = () => {
         -1.3,
         1.3
       );
-      tmpNdc.set(nx, ny);
+      tmpNdc.current.set(nx, ny);
 
-      raycaster.setFromCamera(tmpNdc, camera);
-      camera.getWorldDirection(cameraForward);
-      drawingPlane.setFromNormalAndCoplanarPoint(
-        cameraForward,
+      raycaster.current.setFromCamera(tmpNdc.current, camera);
+      camera.getWorldDirection(cameraForward.current);
+      drawingPlane.current.setFromNormalAndCoplanarPoint(
+        cameraForward.current,
         new THREE.Vector3(0, 0, 0)
       );
 
-      if (!raycaster.ray.intersectPlane(drawingPlane, tmpHit)) return null;
-      return tmpHit.clone();
+      if (!raycaster.current.ray.intersectPlane(drawingPlane.current, tmpHit.current)) return null;
+      return tmpHit.current.clone();
     };
 
     const spawnBubbleLetter = (worldPos: THREE.Vector3) => {
@@ -123,7 +123,7 @@ export const FloatingChromeSpawns = () => {
         capture: true,
       });
     };
-  }, [camera, gl, raycaster, drawingPlane, cameraForward, tmpHit, tmpNdc]);
+  }, [camera, gl]);
 
   return (
     <BubbleSvgLetters

@@ -1,12 +1,12 @@
 "use client";
 
-import { type MutableRefObject, useLayoutEffect, useMemo, useRef } from "react";
+import { type MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
-import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
-import { FloatingChromeSpawns } from "./FloatingChromeSpawns/FloatingChromeSpawns";
+import { FloatingChromeSpawns } from "../FloatingChromeSpawns/FloatingChromeSpawns";
 import {
   createPendulumSim,
   HERO_PENDULUM_BG,
@@ -23,8 +23,6 @@ import {
 } from "./useHeroPendulumMouse";
 
 const BG = new THREE.Color(HERO_PENDULUM_BG);
-
-const HERO_PENDULUM_HDRI_URL = "/animations/pendolo.hdr";
 
 function makeSoftShadowTexture(): THREE.CanvasTexture {
   const size = 128;
@@ -52,57 +50,29 @@ function makeSoftShadowTexture(): THREE.CanvasTexture {
 }
 
 function RectAreaLightInit() {
-  useLayoutEffect(() => {
+  useEffect(() => {
     RectAreaLightUniformsLib.init();
   }, []);
   return null;
 }
 
-function HdrEnvironment({
-  url,
-  environmentIntensity = 0.82,
-}: {
-  url: string;
-  environmentIntensity?: number;
-}) {
+function SceneEnvironment({ intensity = 0.82 }: { intensity?: number }) {
   const { gl, scene } = useThree();
 
-  useLayoutEffect(() => {
-    const loader = new HDRLoader();
-    let cancelled = false;
-    let renderTarget: THREE.WebGLRenderTarget | null = null;
-    const prevIntensity = scene.environmentIntensity;
+  useEffect(() => {
+    const pmrem = new THREE.PMREMGenerator(gl);
+    pmrem.compileEquirectangularShader();
+    const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
 
-    loader.load(
-      url,
-      (tex) => {
-        if (cancelled) {
-          tex.dispose();
-          return;
-        }
-        const pmrem = new THREE.PMREMGenerator(gl);
-        tex.mapping = THREE.EquirectangularReflectionMapping;
-        renderTarget = pmrem.fromEquirectangular(tex);
-        tex.dispose();
-        pmrem.dispose();
-        scene.environment = renderTarget.texture;
-        scene.environmentIntensity = environmentIntensity;
-      },
-      undefined,
-      () => {
-        if (process.env.NODE_ENV === "development" && !cancelled) {
-          console.warn("[HeroPendulumCanvas] HDRI failed to load:", url);
-        }
-      }
-    );
+    scene.environment = envTexture;
+    scene.environmentIntensity = intensity;
 
     return () => {
-      cancelled = true;
+      envTexture.dispose();
       scene.environment = null;
-      scene.environmentIntensity = prevIntensity;
-      renderTarget?.dispose();
     };
-  }, [gl, scene, url, environmentIntensity]);
+  }, [gl, scene, intensity]);
 
   return null;
 }
@@ -121,7 +91,7 @@ function FakeSoftShadowPlane({
   const meshRef = useRef<THREE.Mesh>(null);
   const map = useMemo(() => makeSoftShadowTexture(), []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     return () => {
       map.dispose();
     };
@@ -177,7 +147,7 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
   const sim = useRef<PendulumSim>(createPendulumSim());
   const reduceMotion = useRef(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     reduceMotion.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -188,10 +158,9 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
       if (swing.current) swing.current.rotation.z = sim.current.theta;
       return;
     }
-    const dt = delta;
-    mouse.tick(dt);
+    mouse.tick(delta);
     stepPendulum(sim.current, {
-      dt,
+      dt: delta,
       mouseSmoothedNdcX: mouse.smoothedNdcX(),
       mouseImpulse: mouse.takeImpulse(),
     });
@@ -216,7 +185,7 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
             />
           </mesh>
           <mesh position={[0, -rodLen - bobR * 0.85, 0]} renderOrder={10}>
-            <sphereGeometry args={[bobR, 32, 32]} />
+            <sphereGeometry args={[bobR, 24, 24]} />
             <meshPhysicalMaterial
               color="#e8eaef"
               roughness={0.045}
@@ -271,10 +240,7 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
         rotation={[-0.4, -0.5, 0]}
       />
 
-      <HdrEnvironment
-        url={HERO_PENDULUM_HDRI_URL}
-        environmentIntensity={0.82}
-      />
+      <SceneEnvironment intensity={0.82} />
 
       <PendulumRig mouse={mouse} />
       <FloatingChromeSpawns />
@@ -282,13 +248,13 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
   );
 }
 
-function HeroPendulumCanvasInner() {
+export default function HeroPendulumCanvas() {
   const mouse = useHeroPendulumMouse();
   return (
     <Canvas
       className="h-full w-full touch-none"
       frameloop="always"
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       gl={{
         antialias: true,
         alpha: false,
@@ -308,8 +274,4 @@ function HeroPendulumCanvasInner() {
       <Scene mouse={mouse} />
     </Canvas>
   );
-}
-
-export default function HeroPendulumCanvas() {
-  return <HeroPendulumCanvasInner />;
 }

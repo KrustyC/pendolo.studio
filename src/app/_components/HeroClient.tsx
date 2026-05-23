@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-const HeroPendulumCanvas = dynamic(() => import("./HeroPendulumCanvas"), {
+const HeroPendulumCanvas = dynamic(() => import("./HeroPendulumCanvas/HeroPendulumCanvas"), {
   ssr: false,
 });
 
-export const HeroPendulum3d = () => {
+export const HeroClient = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

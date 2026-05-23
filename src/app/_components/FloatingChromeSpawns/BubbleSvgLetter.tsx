@@ -26,14 +26,6 @@ interface BubbleSvgLetterProps {
   onExpired: (id: number) => void;
 }
 
-interface BubbleSvgLetterProps {
-  item: BubbleLetter;
-  letterGeometry: LetterGeometry;
-  foilMaterial: Material;
-  simEnabled: boolean;
-  onExpired: (id: number) => void;
-}
-
 export const BubbleSvgLetter: React.FC<BubbleSvgLetterProps> = ({
   item,
   letterGeometry,
