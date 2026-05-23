@@ -1,7 +1,21 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useSyncExternalStore } from "react";
+
+function subscribe(cb: () => void) {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
+function useReducedMotion(): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false // SSR snapshot — never reduced
+  );
+}
 
 const SECOND_LINE = "Let’s decide together.";
 const SECOND_LINE_DELAY_S = 2;
