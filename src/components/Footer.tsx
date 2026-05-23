@@ -25,7 +25,7 @@ export const Footer = () => {
     >
       <div className="grid grid-cols-2 gap-y-2 text-[8px] uppercase leading-[1.6] tracking-[0.06em] md:grid-cols-3 md:text-[10px]">
         <div>
-          <p>Based in UK</p>
+          <p>Remote based</p>
         </div>
         <div className="md:text-center">
           <a

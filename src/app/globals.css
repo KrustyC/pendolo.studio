@@ -49,72 +49,6 @@
   }
 }
 
-:root {
-  /* Semantic colors */
-  --background: hsl(42, 40%, 95%);
-  --foreground: hsl(25, 20%, 14%);
-
-  --background: #ffffff;
-  --foreground: #171717;
-
-  --gray-60: #f7f6f6;
-
-  --primary: #222f3f;
-  --accent: #fed9a5;
-  --accent-dark: #dda558;
-
-  --card: hsl(42, 35%, 91%);
-  --card-foreground: hsl(25, 20%, 14%);
-
-  --primary: hsl(220, 55%, 35%);
-  --primary-foreground: hsl(42, 40%, 95%);
-
-  --secondary: hsl(42, 30%, 88%);
-  --secondary-foreground: hsl(25, 20%, 14%);
-
-  --muted: hsl(40, 22%, 89%);
-  --muted-foreground: hsl(25, 10%, 45%);
-
-  --accent: hsl(4, 68%, 50%);
-  --accent-foreground: hsl(42, 40%, 95%);
-
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-
-  --border: hsl(38, 22%, 82%);
-  --input: hsl(38, 22%, 82%);
-  --ring: hsl(220, 55%, 35%);
-
-  --radius: 1rem;
-
-  /* Brand palette */
-  --blue: hsl(220, 55%, 35%);
-  --blue-light: hsl(218, 45%, 48%);
-  --coral: hsl(4, 68%, 50%);
-  --coral-light: hsl(6, 55%, 65%);
-  --mustard: hsl(42, 88%, 52%);
-  --mustard-dark: hsl(40, 80%, 42%);
-  --cream: hsl(42, 40%, 95%);
-  --cream-dark: hsl(42, 30%, 88%);
-  --forest: hsl(145, 35%, 30%);
-  --charcoal: hsl(25, 20%, 14%);
-}
-
-@keyframes pendulum-swing {
-  0%,
-  100% {
-    transform: rotate(-20deg);
-  }
-  50% {
-    transform: rotate(20deg);
-  }
-}
-
-.pendulum-arm {
-  animation: pendulum-swing 3s ease-in-out infinite;
-  transform-origin: top center;
-}
-
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -128,21 +62,6 @@
 
 .animate-fade-up {
   animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-fade-up-delay-1 {
-  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
-  opacity: 0;
-}
-
-.animate-fade-up-delay-2 {
-  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-  opacity: 0;
-}
-
-.animate-fade-up-delay-3 {
-  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
-  opacity: 0;
 }
 
 @keyframes services-hero-glow-flash {
@@ -235,29 +154,6 @@
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: selection-circle-draw 0.65s cubic-bezier(0.33, 1, 0.38, 1) forwards;
-}
-
-.link-underline {
-  position: relative;
-  display: inline-block;
-}
-
-.link-underline::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.link-underline:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
 }
 
 html.glass-cursor-on,

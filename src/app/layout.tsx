@@ -23,10 +23,13 @@ export default function RootLayout({
     <html lang="en" className={fontVariables}>
       <body>
         <GlassCursor />
-        <Navbar />
-        {children}
-        <Footer />
         <Toaster />
+
+        <Navbar />
+
+        {children}
+
+        <Footer />
       </body>
     </html>
   );
