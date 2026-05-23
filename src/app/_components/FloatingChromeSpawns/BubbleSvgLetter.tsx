@@ -2,9 +2,9 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import type { BufferGeometry, Group, Material } from "three";
+import type { CanvasTexture, Sprite } from "three";
 
-import { BubbleLetter } from "./FloatingChromeSpawns.types";
+import { type BubbleLetter } from "./FloatingChromeSpawns.types";
 
 const WOBBLE_AMP_X = 0.05;
 const WOBBLE_AMP_Y = 0.02;
@@ -12,33 +12,25 @@ const WOBBLE_AMP_Z = 0.04;
 const CULL_Y_TOP = 4.6;
 const CULL_RADIUS_SQ = 81;
 
-type LetterGeometry = {
-  geometry: BufferGeometry;
-  width: number;
-  height: number;
-};
-
 interface BubbleSvgLetterProps {
   item: BubbleLetter;
-  letterGeometry: LetterGeometry;
-  foilMaterial: Material;
+  texture: CanvasTexture;
   simEnabled: boolean;
   onExpired: (id: number) => void;
 }
 
 export const BubbleSvgLetter: React.FC<BubbleSvgLetterProps> = ({
   item,
-  letterGeometry,
-  foilMaterial,
+  texture,
   simEnabled,
   onExpired,
 }) => {
-  const groupRef = useRef<Group>(null);
+  const spriteRef = useRef<Sprite>(null);
   const expiredRef = useRef(false);
 
   useFrame((_, dtRaw) => {
-    const group = groupRef.current;
-    if (!group) return;
+    const sprite = spriteRef.current;
+    if (!sprite) return;
 
     const dt = Math.min(Math.max(dtRaw, 0), 1 / 30);
     const now = performance.now();
@@ -72,23 +64,15 @@ export const BubbleSvgLetter: React.FC<BubbleSvgLetterProps> = ({
 
     const pulse =
       1 + Math.sin((now - item.born) * 0.005 + item.wobbleSeed) * 0.018;
-    group.position.copy(item.pos);
-    group.rotation.set(-0.08, 0.13, item.rotationZ);
-    group.scale.set(
-      item.scale * pulse,
-      item.scale * (2 - pulse),
-      item.scale * 1.15
-    );
+    sprite.position.copy(item.pos);
+    // SpriteMaterial.rotation is screen-space Z rotation (radians)
+    sprite.material.rotation = item.rotationZ;
+    sprite.scale.set(item.scale * pulse, item.scale * (2 - pulse), 1);
   });
 
   return (
-    <group ref={groupRef} renderOrder={18}>
-      <mesh
-        geometry={letterGeometry.geometry}
-        material={foilMaterial}
-        frustumCulled={false}
-        renderOrder={18}
-      />
-    </group>
+    <sprite ref={spriteRef} frustumCulled={false} renderOrder={18}>
+      <spriteMaterial map={texture} transparent depthWrite={false} />
+    </sprite>
   );
 };

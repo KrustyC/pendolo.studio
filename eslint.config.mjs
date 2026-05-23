@@ -59,7 +59,8 @@ const config = [
     // R3F extends JSX.IntrinsicElements with Three.js elements (meshStandardMaterial, group, etc.)
     // whose props are already type-checked by TypeScript — the React ESLint plugin doesn't understand them
     files: [
-      "src/app/_components/HeroPendulum3D/**/*.{tsx,jsx}",
+      "src/app/_components/HeroPendulumCanvas/**/*.{tsx,jsx}",
+      "src/app/_components/FloatingChromeSpawns/**/*.{tsx,jsx}",
     ],
     rules: {
       "react/no-unknown-property": "off",

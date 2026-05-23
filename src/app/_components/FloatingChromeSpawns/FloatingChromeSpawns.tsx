@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useThree } from "@react-three/fiber";
-import * as THREE from "three";
+import type { Camera } from "three";
+import { MathUtils, Plane, Raycaster, Vector2, Vector3 } from "three";
 
 import { BubbleSvgLetters } from "./BubbleSvgLetters";
 import { blocksChromeSpawn, isPointerInHeroSection } from "./chromeSpawnUtils";
@@ -28,11 +29,11 @@ export const FloatingChromeSpawns = () => {
   const camera = useThree((s) => s.camera);
   const gl = useThree((s) => s.gl);
 
-  const raycaster = useRef(new THREE.Raycaster());
-  const drawingPlane = useRef(new THREE.Plane());
-  const cameraForward = useRef(new THREE.Vector3());
-  const tmpHit = useRef(new THREE.Vector3());
-  const tmpNdc = useRef(new THREE.Vector2());
+  const raycaster = useRef(new Raycaster());
+  const drawingPlane = useRef(new Plane());
+  const cameraForward = useRef(new Vector3());
+  const tmpHit = useRef(new Vector3());
+  const tmpNdc = useRef(new Vector2());
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -49,16 +50,16 @@ export const FloatingChromeSpawns = () => {
     const projectToWorld = (
       clientX: number,
       clientY: number
-    ): THREE.Vector3 | null => {
+    ): Vector3 | null => {
       const rect = gl.domElement.getBoundingClientRect();
       if (rect.width < 16 || rect.height < 16) return null;
 
-      const nx = THREE.MathUtils.clamp(
+      const nx = MathUtils.clamp(
         ((clientX - rect.left) / rect.width) * 2 - 1,
         -1.3,
         1.3
       );
-      const ny = THREE.MathUtils.clamp(
+      const ny = MathUtils.clamp(
         -((clientY - rect.top) / rect.height) * 2 + 1,
         -1.3,
         1.3
@@ -69,14 +70,20 @@ export const FloatingChromeSpawns = () => {
       camera.getWorldDirection(cameraForward.current);
       drawingPlane.current.setFromNormalAndCoplanarPoint(
         cameraForward.current,
-        new THREE.Vector3(0, 0, 0)
+        new Vector3(0, 0, 0)
       );
 
-      if (!raycaster.current.ray.intersectPlane(drawingPlane.current, tmpHit.current)) return null;
+      if (
+        !raycaster.current.ray.intersectPlane(
+          drawingPlane.current,
+          tmpHit.current
+        )
+      )
+        return null;
       return tmpHit.current.clone();
     };
 
-    const spawnBubbleLetter = (worldPos: THREE.Vector3) => {
+    const spawnBubbleLetter = (worldPos: Vector3) => {
       const letter =
         PENDOLO_SEQUENCE[nextLetterIdxRef.current % PENDOLO_SEQUENCE.length];
       nextLetterIdxRef.current++;
@@ -134,8 +141,8 @@ export const FloatingChromeSpawns = () => {
   );
 };
 
-function getHeliumVelocity(camera: THREE.Camera, seed: number): THREE.Vector3 {
-  const horiz = new THREE.Vector3(camera.position.x, 0, camera.position.z);
+function getHeliumVelocity(camera: Camera, seed: number): Vector3 {
+  const horiz = new Vector3(camera.position.x, 0, camera.position.z);
   if (horiz.lengthSq() < 1e-6) {
     horiz.set(0, 0, 1);
   } else {
@@ -148,5 +155,5 @@ function getHeliumVelocity(camera: THREE.Camera, seed: number): THREE.Vector3 {
   const driftZ = Math.cos(seed * 0.019 + 1.3) * DRIFT_SPEED * 0.5;
   const lift = RISE_SPEED + Math.cos(seed * 0.023) * 0.06;
 
-  return new THREE.Vector3(horiz.x + driftX, lift, horiz.z + driftZ);
+  return new Vector3(horiz.x + driftX, lift, horiz.z + driftZ);
 }

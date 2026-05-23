@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import type { Group } from "three";
 
+import { FakeSoftShadowPlane } from "./FakeSoftShadowPlane";
 import {
   createPendulumSim,
   PENDULUM_BOB_RADIUS,
@@ -10,10 +11,9 @@ import {
   stepPendulum,
 } from "./pendulumMotion";
 import { type HeroPendulumMouseApi } from "./useHeroPendulumMouse";
-import { FakeSoftShadowPlane } from "./FakeSoftShadowPlane";
 
 export function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
-  const swing = useRef<THREE.Group>(null);
+  const swing = useRef<Group>(null);
   const sim = useRef(createPendulumSim());
   // Read synchronously so frame 1 already respects the OS preference
   const reduceMotion = useRef(
@@ -54,9 +54,7 @@ export function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
       <group position={PENDULUM_PIVOT}>
         <group ref={swing}>
           <mesh position={[0, -PENDULUM_ROD_LENGTH / 2, 0]} renderOrder={10}>
-            <cylinderGeometry
-              args={[0.0045, 0.0045, PENDULUM_ROD_LENGTH, 8]}
-            />
+            <cylinderGeometry args={[0.0045, 0.0045, PENDULUM_ROD_LENGTH, 8]} />
             <meshPhysicalMaterial
               color="#2a2a2a"
               roughness={0.35}

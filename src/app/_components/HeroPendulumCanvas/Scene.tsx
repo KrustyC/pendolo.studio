@@ -1,11 +1,12 @@
-import * as THREE from "three";
+import { Color } from "three";
 
 import { FloatingChromeSpawns } from "../FloatingChromeSpawns/FloatingChromeSpawns";
-import { HERO_PENDULUM_BG } from "./pendulumMotion";
-import { type HeroPendulumMouseApi } from "./useHeroPendulumMouse";
-import { PendulumRig } from "./PendulumRig";
 
-const BG = new THREE.Color(HERO_PENDULUM_BG);
+import { HERO_PENDULUM_BG } from "./pendulumMotion";
+import { PendulumRig } from "./PendulumRig";
+import { type HeroPendulumMouseApi } from "./useHeroPendulumMouse";
+
+const BG = new Color(HERO_PENDULUM_BG);
 
 export function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
   return (
@@ -18,8 +19,16 @@ export function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
         intensity={0.52}
         position={[0, 1, 0]}
       />
-      <directionalLight position={[4.5, 8, 5]} intensity={0.95} color="#ffffff" />
-      <directionalLight position={[-5, 5, 3]} intensity={0.38} color="#f4f6f8" />
+      <directionalLight
+        position={[4.5, 8, 5]}
+        intensity={0.95}
+        color="#ffffff"
+      />
+      <directionalLight
+        position={[-5, 5, 3]}
+        intensity={0.38}
+        color="#f4f6f8"
+      />
       <rectAreaLight
         width={5}
         height={5}

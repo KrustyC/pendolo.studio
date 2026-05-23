@@ -1,6 +1,13 @@
-import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
+import { type MutableRefObject,useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import type { Mesh, MeshBasicMaterial } from "three";
+import {
+  CanvasTexture,
+  ClampToEdgeWrapping,
+  MathUtils,
+  NormalBlending,
+  SRGBColorSpace,
+} from "three";
 
 import {
   PENDULUM_ARM,
@@ -17,13 +24,13 @@ export const SHADOW_FLOOR_Y =
 const [PIVOT_X, PIVOT_Y, PIVOT_Z] = PENDULUM_PIVOT;
 const ARM = PENDULUM_ARM;
 
-function makeSoftShadowTexture(): THREE.CanvasTexture {
+function makeSoftShadowTexture(): CanvasTexture {
   const size = 128;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
-  if (!ctx) return new THREE.CanvasTexture(canvas);
+  if (!ctx) return new CanvasTexture(canvas);
 
   const cx = size / 2;
   const g = ctx.createRadialGradient(cx, cx, 0, cx, cx, cx * 0.92);
@@ -34,9 +41,9 @@ function makeSoftShadowTexture(): THREE.CanvasTexture {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, size, size);
 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-  tex.colorSpace = THREE.SRGBColorSpace;
+  const tex = new CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = ClampToEdgeWrapping;
+  tex.colorSpace = SRGBColorSpace;
   tex.needsUpdate = true;
   return tex;
 }
@@ -48,8 +55,8 @@ export function FakeSoftShadowPlane({
   simRef: MutableRefObject<PendulumSim>;
   bobRadius: number;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+  const meshRef = useRef<Mesh>(null);
+  const materialRef = useRef<MeshBasicMaterial>(null);
   const map = useMemo(() => makeSoftShadowTexture(), []);
 
   useEffect(() => () => map.dispose(), [map]);
@@ -64,7 +71,7 @@ export function FakeSoftShadowPlane({
 
     meshRef.current.position.set(bx, SHADOW_FLOOR_Y, PIVOT_Z);
     meshRef.current.scale.setScalar(1 + shadowToBob * 0.18);
-    materialRef.current.opacity = THREE.MathUtils.clamp(
+    materialRef.current.opacity = MathUtils.clamp(
       0.82 - shadowToBob * 0.22,
       0.28,
       0.82
@@ -81,7 +88,7 @@ export function FakeSoftShadowPlane({
         depthWrite={false}
         depthTest
         toneMapped={false}
-        blending={THREE.NormalBlending}
+        blending={NormalBlending}
         polygonOffset
         polygonOffsetFactor={2}
         polygonOffsetUnits={2}
