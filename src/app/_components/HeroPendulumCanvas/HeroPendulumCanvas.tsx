@@ -1,7 +1,7 @@
 "use client";
 
 import { type MutableRefObject, useEffect, useMemo, useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
@@ -21,6 +21,9 @@ import {
   type HeroPendulumMouseApi,
   useHeroPendulumMouse,
 } from "./useHeroPendulumMouse";
+
+// Idempotent and context-free — safe to call once at module load
+RectAreaLightUniformsLib.init();
 
 const BG = new THREE.Color(HERO_PENDULUM_BG);
 
@@ -49,34 +52,6 @@ function makeSoftShadowTexture(): THREE.CanvasTexture {
   return tex;
 }
 
-function RectAreaLightInit() {
-  useEffect(() => {
-    RectAreaLightUniformsLib.init();
-  }, []);
-  return null;
-}
-
-function SceneEnvironment({ intensity = 0.82 }: { intensity?: number }) {
-  const { gl, scene } = useThree();
-
-  useEffect(() => {
-    const pmrem = new THREE.PMREMGenerator(gl);
-    pmrem.compileEquirectangularShader();
-    const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    pmrem.dispose();
-
-    scene.environment = envTexture;
-    scene.environmentIntensity = intensity;
-
-    return () => {
-      envTexture.dispose();
-      scene.environment = null;
-    };
-  }, [gl, scene, intensity]);
-
-  return null;
-}
-
 const SHADOW_GAP_BELOW_BOB = 0.07;
 const SHADOW_FLOOR_Y =
   PENDULUM_PIVOT[1] - PENDULUM_ARM - PENDULUM_BOB_RADIUS - SHADOW_GAP_BELOW_BOB;
@@ -89,6 +64,7 @@ function FakeSoftShadowPlane({
   bobRadius: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
   const map = useMemo(() => makeSoftShadowTexture(), []);
 
   useEffect(() => {
@@ -101,33 +77,29 @@ function FakeSoftShadowPlane({
   const [px, py, pz] = PENDULUM_PIVOT;
 
   useFrame(() => {
+    if (!meshRef.current || !materialRef.current) return;
+
     const th = simRef.current.theta;
     const sin = Math.sin(th);
     const cos = Math.cos(th);
     const bx = px + h * sin;
     const by = py - h * cos;
-    const bz = pz;
     const shadowToBob = Math.max(0, by - bobRadius - SHADOW_FLOOR_Y);
-    if (!meshRef.current) return;
 
-    meshRef.current.position.set(bx, SHADOW_FLOOR_Y, bz);
-    const shadowScale = 1 + shadowToBob * 0.18;
-    meshRef.current.scale.set(shadowScale, shadowScale, shadowScale);
-
-    const material = meshRef.current.material;
-    if (material instanceof THREE.MeshBasicMaterial) {
-      material.opacity = THREE.MathUtils.clamp(
-        0.82 - shadowToBob * 0.22,
-        0.28,
-        0.82
-      );
-    }
+    meshRef.current.position.set(bx, SHADOW_FLOOR_Y, pz);
+    meshRef.current.scale.setScalar(1 + shadowToBob * 0.18);
+    materialRef.current.opacity = THREE.MathUtils.clamp(
+      0.82 - shadowToBob * 0.22,
+      0.28,
+      0.82
+    );
   });
 
   return (
     <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} renderOrder={0}>
       <planeGeometry args={[1.85, 1.85]} />
       <meshBasicMaterial
+        ref={materialRef}
         map={map}
         transparent
         depthWrite={false}
@@ -148,14 +120,17 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
   const reduceMotion = useRef(false);
 
   useEffect(() => {
-    reduceMotion.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => { reduceMotion.current = mq.matches; };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
   }, []);
 
   useFrame((_, delta) => {
+    if (!swing.current) return;
     if (reduceMotion.current) {
-      if (swing.current) swing.current.rotation.z = sim.current.theta;
+      swing.current.rotation.z = sim.current.theta;
       return;
     }
     mouse.tick(delta);
@@ -164,7 +139,7 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
       mouseSmoothedNdcX: mouse.smoothedNdcX(),
       mouseImpulse: mouse.takeImpulse(),
     });
-    if (swing.current) swing.current.rotation.z = sim.current.theta;
+    swing.current.rotation.z = sim.current.theta;
   });
 
   const rodLen = PENDULUM_ROD_LENGTH;
@@ -188,11 +163,9 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
             <sphereGeometry args={[bobR, 24, 24]} />
             <meshPhysicalMaterial
               color="#e8eaef"
-              roughness={0.045}
-              metalness={0.96}
-              envMapIntensity={0.95}
-              clearcoat={1}
-              clearcoatRoughness={0.04}
+              roughness={0.02}
+              metalness={1.0}
+              envMapIntensity={1.1}
             />
           </mesh>
         </group>
@@ -204,7 +177,6 @@ function PendulumRig({ mouse }: { mouse: HeroPendulumMouseApi }) {
 function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
   return (
     <>
-      <RectAreaLightInit />
       <color attach="background" args={[BG]} />
       <ambientLight intensity={0.34} />
       <hemisphereLight
@@ -240,8 +212,6 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
         rotation={[-0.4, -0.5, 0]}
       />
 
-      <SceneEnvironment intensity={0.82} />
-
       <PendulumRig mouse={mouse} />
       <FloatingChromeSpawns />
     </>
@@ -250,6 +220,14 @@ function Scene({ mouse }: { mouse: HeroPendulumMouseApi }) {
 
 export default function HeroPendulumCanvas() {
   const mouse = useHeroPendulumMouse();
+  const envTextureRef = useRef<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    return () => {
+      envTextureRef.current?.dispose();
+    };
+  }, []);
+
   return (
     <Canvas
       className="h-full w-full touch-none"
@@ -267,8 +245,18 @@ export default function HeroPendulumCanvas() {
         far: 40,
         position: [3.12, 0.42, 4.35],
       }}
-      onCreated={({ camera }) => {
+      onCreated={({ camera, gl, scene }) => {
         camera.lookAt(-0.38, -0.08, 0);
+
+        // Build the IBL environment synchronously before frame 1 so the
+        // metallic sphere never renders without reflections.
+        const pmrem = new THREE.PMREMGenerator(gl);
+        const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+        pmrem.dispose();
+
+        envTextureRef.current = env;
+        scene.environment = env;
+        scene.environmentIntensity = 0.9;
       }}
     >
       <Scene mouse={mouse} />
