@@ -35,14 +35,17 @@ export function useHeroPendulumMouse(): HeroPendulumMouseApi {
 
     const onLeave = () => {
       lastClientX.current = null;
+      targetNdcX.current = 0; // reset bias so pendulum returns to centre when cursor leaves
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerout", onLeave, { passive: true });
+    // pointerleave does not bubble — fires only when the cursor exits the document,
+    // unlike pointerout which fires on every child-element boundary crossing.
+    window.addEventListener("pointerleave", onLeave, { passive: true });
 
     return () => {
       window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerout", onLeave);
+      window.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
