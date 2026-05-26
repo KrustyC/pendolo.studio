@@ -19,39 +19,32 @@ export type PendulumSim = {
 };
 
 export function createPendulumSim(): PendulumSim {
-  return { theta: 0.06, omega: 0, t: 0 };
+  return { theta: 0.28, omega: 0, t: 0 };
 }
 
 type StepArgs = {
   dt: number;
-  mouseSmoothedNdcX: number;
+  /** Signed torque impulse from a pointer hit (0 on frames with no hit). */
   mouseImpulse: number;
 };
 
-/** Gravity pendulum + damping + slow periodic drive + soft mouse bias + impulse */
+/** Gravity pendulum + damping + slow periodic drive + hit impulse */
 export function stepPendulum(
   sim: PendulumSim,
-  { dt, mouseSmoothedNdcX, mouseImpulse }: StepArgs
+  { dt, mouseImpulse }: StepArgs
 ): void {
   const dtClamped = Math.min(Math.max(dt, 0), 1 / 30);
 
   const g = 9.82;
   const length = PENDULUM_ARM;
-  const damping = 0.52;
+  const damping = 0.28;
   const driveOmega = 0.38;
-  const driveAmp = 0.32;
+  const driveAmp = 0.52;
   const driveOmega2 = 0.53;
   const driveAmp2 = 0.05;
-  /** radians — how far cursor can shift the virtual equilibrium */
-  const mouseMaxBias = 0.78;
-  /** spring toward that equilibrium (higher = snappier cursor pull) */
-  const mouseSpring = 0.46;
   const driveMix = 0.2;
 
   sim.t += dtClamped;
-
-  const clampedMouse = Math.max(-1, Math.min(1, mouseSmoothedNdcX));
-  const equilibriumBias = clampedMouse * mouseMaxBias;
 
   const drive =
     driveAmp * Math.sin(driveOmega * sim.t + 0.25) +
@@ -60,10 +53,9 @@ export function stepPendulum(
   const pendulum = -(g / length) * Math.sin(sim.theta);
   const drag = -damping * sim.omega;
   const driveTorque = driveMix * drive;
-  const mouseTorque = -mouseSpring * (sim.theta - equilibriumBias);
   const impulseTorque = mouseImpulse * 8.6;
 
-  const alpha = pendulum + drag + driveTorque + mouseTorque + impulseTorque;
+  const alpha = pendulum + drag + driveTorque + impulseTorque;
   sim.omega += alpha * dtClamped;
   sim.theta += sim.omega * dtClamped;
 }

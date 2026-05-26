@@ -1,66 +1,67 @@
 import { useCallback, useEffect, useRef } from "react";
 
-const IMPULSE_PER_PX = 0.00042;
-/** Lower = pendulum biases toward cursor X sooner (still low-pass filtered for stability). */
-const SMOOTH_TAU_SEC = 0.09;
-
 export type HeroPendulumMouseApi = {
-  /** Call once per frame before reading values */
-  tick: (dt: number) => void;
-  smoothedNdcX: () => number;
-  /** Torque impulse from horizontal pointer movement (consumed) */
-  takeImpulse: () => number;
+  /** Current pointer position in NDC (-1..1, Y-up). */
+  ndc: () => { x: number; y: number };
+  /**
+   * Accumulated NDC displacement since the last call (consumed).
+   * Uses NDC convention on both axes (Y-up). Returns {0,0} when the
+   * pointer hasn't moved or has left the window.
+   */
+  takeNdcDelta: () => { dx: number; dy: number };
 };
 
 /**
- * Tracks pointer in normalized device coordinates (-1..1 horizontal).
- * Smoothed X feeds a soft force; raw horizontal delta accumulates impulse.
+ * Minimal pointer tracker — exposes current NDC position and the accumulated
+ * NDC displacement since the last frame. No smoothing or impulse math here;
+ * callers project onto whatever axis they need (e.g. the Foucault swing axis).
  */
 export function useHeroPendulumMouse(): HeroPendulumMouseApi {
-  const targetNdcX = useRef(0);
-  const smoothNdcX = useRef(0);
-  const impulseBank = useRef(0);
-  const lastClientX = useRef<number | null>(null);
+  const curX = useRef(0);   // current NDC X
+  const curY = useRef(0);   // current NDC Y
+  const dxAcc = useRef(0);  // accumulated NDC Δx (consumed per frame)
+  const dyAcc = useRef(0);  // accumulated NDC Δy (consumed per frame)
+  const tracking = useRef(false); // false while pointer is outside the window
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       const w = window.innerWidth || 1;
-      targetNdcX.current = (e.clientX / w) * 2 - 1;
-      if (lastClientX.current != null) {
-        impulseBank.current +=
-          (e.clientX - lastClientX.current) * IMPULSE_PER_PX;
+      const h = window.innerHeight || 1;
+      const nx = (e.clientX / w) * 2 - 1;
+      const ny = -(e.clientY / h) * 2 + 1; // flip to NDC Y-up
+
+      if (tracking.current) {
+        dxAcc.current += nx - curX.current;
+        dyAcc.current += ny - curY.current;
       }
-      lastClientX.current = e.clientX;
+
+      curX.current = nx;
+      curY.current = ny;
+      tracking.current = true;
     };
 
     const onLeave = () => {
-      lastClientX.current = null;
-      targetNdcX.current = 0; // reset bias so pendulum returns to centre when cursor leaves
+      tracking.current = false;
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
-    // pointerleave does not bubble — fires only when the cursor exits the document,
-    // unlike pointerout which fires on every child-element boundary crossing.
+    // pointerleave does not bubble — fires only when the cursor exits the document.
     window.addEventListener("pointerleave", onLeave, { passive: true });
-
     return () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
-  const tick = useCallback((dt: number) => {
-    const k = 1 - Math.exp(-dt / SMOOTH_TAU_SEC);
-    smoothNdcX.current += (targetNdcX.current - smoothNdcX.current) * k;
+  const ndc = useCallback(() => ({ x: curX.current, y: curY.current }), []);
+
+  const takeNdcDelta = useCallback(() => {
+    const dx = dxAcc.current;
+    const dy = dyAcc.current;
+    dxAcc.current = 0;
+    dyAcc.current = 0;
+    return { dx, dy };
   }, []);
 
-  const smoothedNdcX = useCallback(() => smoothNdcX.current, []);
-
-  const takeImpulse = useCallback(() => {
-    const v = impulseBank.current;
-    impulseBank.current = 0;
-    return v;
-  }, []);
-
-  return { tick, smoothedNdcX, takeImpulse };
+  return { ndc, takeNdcDelta };
 }

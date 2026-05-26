@@ -51,9 +51,12 @@ function makeSoftShadowTexture(): CanvasTexture {
 export function FakeSoftShadowPlane({
   simRef,
   bobRadius,
+  foucaultAngleRef,
 }: {
   simRef: MutableRefObject<PendulumSim>;
   bobRadius: number;
+  /** Current Foucault swing-plane Y-rotation angle (radians). */
+  foucaultAngleRef: MutableRefObject<number>;
 }) {
   const meshRef = useRef<Mesh>(null);
   const materialRef = useRef<MeshBasicMaterial>(null);
@@ -65,11 +68,21 @@ export function FakeSoftShadowPlane({
     if (!meshRef.current || !materialRef.current) return;
 
     const { theta } = simRef.current;
-    const bx = PIVOT_X + ARM * Math.sin(theta);
+
+    // Horizontal displacement of the bob in the foucault group's local space.
+    const localX = ARM * Math.sin(theta);
+
+    // Three.js Y-rotation φ maps local +X toward world -Z:
+    //   world_x = localX · cos(φ)
+    //   world_z = −localX · sin(φ)
+    const phi = foucaultAngleRef.current;
+    const bx = PIVOT_X + localX * Math.cos(phi);
+    const bz = PIVOT_Z - localX * Math.sin(phi);
+
     const by = PIVOT_Y - ARM * Math.cos(theta);
     const shadowToBob = Math.max(0, by - bobRadius - SHADOW_FLOOR_Y);
 
-    meshRef.current.position.set(bx, SHADOW_FLOOR_Y, PIVOT_Z);
+    meshRef.current.position.set(bx, SHADOW_FLOOR_Y, bz);
     meshRef.current.scale.setScalar(1 + shadowToBob * 0.18);
     materialRef.current.opacity = MathUtils.clamp(
       0.82 - shadowToBob * 0.22,

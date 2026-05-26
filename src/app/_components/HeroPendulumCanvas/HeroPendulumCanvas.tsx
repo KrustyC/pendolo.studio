@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import type { Texture } from "three";
-import { PMREMGenerator } from "three";
+import { PMREMGenerator, setConsoleFunction } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 
@@ -12,6 +12,18 @@ import { useHeroPendulumMouse } from "./useHeroPendulumMouse";
 
 // Idempotent and context-free — safe to call once at module load
 RectAreaLightUniformsLib.init();
+
+// R3F 9.6.1 still uses THREE.Clock internally; Three.js r183 deprecated it
+// in favour of THREE.Timer. Route Three.js's own warn channel through a
+// filter so this known false-positive stays out of the console.
+// Remove once R3F switches to THREE.Timer.
+setConsoleFunction((type, message, ...rest) => {
+  if (type === "warn" && typeof message === "string" && message.startsWith("THREE.Clock:")) return;
+  (console[type as "log" | "warn" | "error"] as (...a: unknown[]) => void)(
+    message,
+    ...rest
+  );
+});
 
 export default function HeroPendulumCanvas() {
   const mouse = useHeroPendulumMouse();
